@@ -445,8 +445,8 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 	public WorkSystemRes deleteWorkInfoByDateBetween(WorkSystemReq req) {
 		WorkSystemRes res = new WorkSystemRes();
 		if (!StringUtils.hasText(req.getSearchStartDate()) || !StringUtils.hasText(req.getSearchEndDate())) {
-			res.setMessage("輸入開始與結束時間");
-			return new WorkSystemRes(res.getMessage());
+			List<WorkSystem> workInfoList = workSystemDao.findAllByOrderByWorkTimeDesc();
+			return new WorkSystemRes(workInfoList,"刪除前先看看吧");
 		}
 		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
 		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
@@ -459,8 +459,7 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		LocalDate endDate = LocalDate.parse(req.getSearchEndDate(), formatDate);
 		if (endDate.isBefore(startDate)) {
 			res.setMessage("開始時間不可大於結束時間");
-			WorkSystem workSystem = null;
-			return new WorkSystemRes(workSystem, res.getMessage());
+			return new WorkSystemRes( res.getMessage());
 		}
 		LocalDateTime startDateTime = startDate.atStartOfDay();
 		LocalDateTime endDateTime = endDate.atStartOfDay();
@@ -567,11 +566,11 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 	@Override
 	public WorkSystemRes getWorkInfoListAbsenteeism(WorkSystemReq req) {
 		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
-		LocalDate absenteeismDate = LocalDate.parse(req.getAbsenteeismDate(), formatDate);
 		if (!StringUtils.hasText(req.getAbsenteeismDate()) || !StringUtils.hasText(req.getEmployeeCode())
 				|| !StringUtils.hasText(req.getManagerEmployeeCode())) {
 			return new WorkSystemRes("參數值或日期不能為空");
 		}
+		LocalDate absenteeismDate = LocalDate.parse(req.getAbsenteeismDate(), formatDate);
 		Optional<EmployeeInfo> employeeStaffOp = employeeInfoDao.findById(req.getManagerEmployeeCode());// 5
 		Optional<EmployeeInfo> employeeManagerOp = employeeInfoDao.findById(req.getEmployeeCode());// 5
 		if (!employeeStaffOp.isPresent() || !employeeManagerOp.isPresent()) {

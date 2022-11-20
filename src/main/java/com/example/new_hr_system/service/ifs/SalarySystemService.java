@@ -8,7 +8,7 @@ public interface SalarySystemService {
 	public SalarySystemRes creatSalarySystem(SalarySystemReq req);
 
 	// ---修改薪水資料 u
-	public SalarySystemRes updateSalarySystem(SalarySystemReq req);
+	public SalarySystemRes updateSalarySystem (SalarySystemReq req);
 
 	// ---查詢薪水資料 r 給員工的
 	public SalarySystemRes searchSalarySystemForStaff(SalarySystemReq req);

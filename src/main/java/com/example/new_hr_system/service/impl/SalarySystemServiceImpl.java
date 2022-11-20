@@ -1,5 +1,6 @@
 package com.example.new_hr_system.service.impl;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import com.example.new_hr_system.service.ifs.SalarySystemService;
 import com.example.new_hr_system.vo.SalarySystemReq;
 import com.example.new_hr_system.vo.SalarySystemRes;
 import com.example.new_hr_system.vo.WorkSystemRes;
- 
+
 @Service
 public class SalarySystemServiceImpl implements SalarySystemService {
 	@Autowired
@@ -40,17 +41,17 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 	// --------------------------------------------------------
 	private SalarySystemRes check(SalarySystemReq req) {
 		SalarySystemRes res = new SalarySystemRes();
-		if (!StringUtils.hasText(req.getEmployeeCode()) || !StringUtils.hasText(req.getSalaryDate())) {
+		if (!StringUtils.hasText(req.getEmployeeCode()) || req.getSalaryDate() == null) {
 			res.setMessage("參數不能空");
 			SalarySystem salarySystem = null;
 			return new SalarySystemRes(salarySystem, res.getMessage());
 		}
-		String checkYearAndMonth = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
-		boolean checkDate = req.getSalaryDate().matches(checkYearAndMonth);
-		if (!checkDate) {
-			res.setMessage("格式為yyyy年mm月dd日");
-			return new SalarySystemRes(res.getMessage());
-		}
+//		String checkYearAndMonth = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
+//		boolean checkDate = req.getSalaryDate().matches(checkYearAndMonth);
+//		if (!checkDate) {
+//			res.setMessage("格式為yyyy年mm月dd日");
+//			return new SalarySystemRes(res.getMessage());
+//		}
 		return null;
 
 	}
@@ -66,15 +67,15 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 			return res;
 		}
 		res = new SalarySystemRes();
-		if(!StringUtils.hasText(req.getSalaryEmployeeCode())) {
+		if (!StringUtils.hasText(req.getSalaryEmployeeCode())) {
 			return new SalarySystemRes("請輸入員工編號");
 		}
 		Optional<EmployeeInfo> managerEmployeeInfoOp = employeeInfoDao.findById(req.getSalaryEmployeeCode());
-		if(!managerEmployeeInfoOp.isPresent()) {
+		if (!managerEmployeeInfoOp.isPresent()) {
 			return new SalarySystemRes("請檢察您的編號");
 		}
 		EmployeeInfo managerEmployeeInfo = managerEmployeeInfoOp.get();
-		if(!managerEmployeeInfo.getSection().equals("人資")) {
+		if (!managerEmployeeInfo.getSection().equals("人資")) {
 			return new SalarySystemRes("您不屬於人資部門");
 		}
 		// 要藉由這張表的資料取得需要的資訊 計算 1.年資 2.姓名 3.主管等級
@@ -89,7 +90,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-M-d");
 
 		// 將接近來的日期<字串>轉為日期
-		LocalDate salaryDate = LocalDate.parse(req.getSalaryDate(), format);
+		LocalDate salaryDate = req.getSalaryDate();
 
 		for (var item : salarySystemList) {
 			if (item.getSalaryDate().getYear() == salaryDate.getYear()
@@ -129,10 +130,12 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		int salaryDeduct = 0;
 
 		for (var item : workSystemList) {
-			if (item.getWorkTime().getYear() == salaryDate.getYear()
-					&& item.getWorkTime().getMonthValue() == salaryDate.getMonthValue()) {
+			if ((item.getWorkTime().getYear() == salaryDate.getYear()
+					&& item.getWorkTime().getMonthValue() + 1 == salaryDate.getMonthValue())
+					|| (item.getWorkTime().getYear() + 1 == salaryDate.getYear()
+							&& item.getWorkTime().getMonthValue() == 12 && salaryDate.getMonthValue() == 1)) {
 				workHours += item.getAttendanceHours();
-				if(item.getAttendanceStatus()==null||item.getAttendanceStatus().length()==0) {
+				if (item.getAttendanceStatus() == null || item.getAttendanceStatus().length() == 0) {
 					salaryDeduct = salaryDeduct - 100;
 					continue;
 				}
@@ -167,28 +170,34 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		SalarySystem finalSalarySystem = new SalarySystem(UUID.randomUUID(), req.getEmployeeCode(),
 				employeeInfo.getName(), salaryDate, salary, raisePay, managerRaisePay, salaryDeduct, totalSalary);
 		salarySystemDao.save(finalSalarySystem);
-		return new SalarySystemRes(finalSalarySystem,"新增成功");
+		return new SalarySystemRes(finalSalarySystem, "新增成功");
 	}
 
 	// =====修改薪水資料 (基本上只能修改底薪)，無視年資 (員工可)
 	@Override
 	public SalarySystemRes updateSalarySystem(SalarySystemReq req) {
 		UUID uuid = UUID.fromString(req.getUuid());
+		// 日期的正規表達
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
 		SalarySystemRes res = new SalarySystemRes();
-		if(!StringUtils.hasText(req.getSalaryEmployeeCode())) {
+		if (!StringUtils.hasText(req.getSalaryEmployeeCode())) {
 			return new SalarySystemRes("請輸入主管編號");
 		}
 		Optional<EmployeeInfo> managerEmployeeInfoOp = employeeInfoDao.findById(req.getSalaryEmployeeCode());
-		if(!managerEmployeeInfoOp.isPresent()) {
+		if (!managerEmployeeInfoOp.isPresent()) {
 			return new SalarySystemRes("請檢察主管編號");
 		}
 		EmployeeInfo managerEmployeeInfo = managerEmployeeInfoOp.get();
-		if(!managerEmployeeInfo.getSection().equals("人資")) {
+		if (!managerEmployeeInfo.getSection().equals("人資")) {
 			return new SalarySystemRes("您不屬於人資部門");
 		}
-
 		// 沒有輸入日期為true，沒有輸入代表要修改底薪
-		boolean checkDateIsNull = !StringUtils.hasText(req.getSalaryDate());
+//		boolean checkDateIsNull = !StringUtils.hasText(req.getSalaryDate());
+		boolean checkDateIsNull = false;
+		if (req.getSalaryDate() == null) {
+			checkDateIsNull = true;
+		}
 
 		// 沒有輸入底薪為true
 		boolean checkSalaryIsNull = req.getSalary() == null;
@@ -222,33 +231,23 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 			salarySystemDao.save(salarySystem);
 			return new SalarySystemRes(salarySystem, "修改底薪成功");
 		}
-
 		// 上面沒有擋掉代表一訂有輸入日期，故要規定日期的正規表達
-		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
-
 		// 判斷日期是否符合格式
-		boolean checkDate = req.getSalaryDate().matches(checkDateString);
-		if (!checkDate) {
-			res.setMessage("格式為yyyy年mm月dd日");
-			return new SalarySystemRes(res.getMessage());
-		}
 
-		// 日期的正規表達
-		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-M-d");
-
-		/// 將接近來的日期字串轉成日期
-		LocalDate salaryDate = LocalDate.parse(req.getSalaryDate(), format);
+		/// 將接近來的日期字串轉成日期 (req)
+		LocalDate salaryDate = req.getSalaryDate();
 
 		// 為了以防修改的日期有重複的情況，撈出來防呆
 		List<SalarySystem> salarySystemList = salarySystemDao.findByEmployeeCode(salarySystem.getEmployeeCode());
 
 		// 防呆
 		for (var item : salarySystemList) {
+			if (item == salarySystem) {
+				continue;
+			}
 			if (item.getSalaryDate().getYear() == salaryDate.getYear()
 					&& item.getSalaryDate().getMonthValue() == salaryDate.getMonthValue()) {
-				res.setMessage("以新增過這位員工該年分、該月份的薪水資料");
-				salarySystem = null;
-				return new SalarySystemRes(salarySystem, res.getMessage());
+				return new SalarySystemRes("以新增過這位員工該年分、該月份的薪水資料");
 			}
 		}
 
@@ -259,30 +258,30 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		int workHours = 0;
 
 		for (var item : workSystemList) {
-			if (item.getWorkTime().getYear() == salaryDate.getYear()
-					&& item.getWorkTime().getMonthValue() == salaryDate.getMonthValue()) {
+			if ((item.getWorkTime().getYear() == salaryDate.getYear()
+					&& item.getWorkTime().getMonthValue() + 1 == salaryDate.getMonthValue())
+					|| (item.getWorkTime().getYear() + 1 == salaryDate.getYear()
+							&& item.getWorkTime().getMonthValue() == 12 && salaryDate.getMonthValue() == 1)) {
 				workHours += item.getAttendanceHours();
 			}
 		}
 
 		if (workHours <= 0) {
-			res.setMessage("找不到該員工的上班時間");
-			return new SalarySystemRes(res.getMessage());
+			return new SalarySystemRes("找不到該員工的上班時間");
 		}
 
 		// 沒有輸入底薪為true，代表只要修改日期
 		if (checkSalaryIsNull) {
 			salarySystem.setSalaryDate(salaryDate);
 			salarySystemDao.save(salarySystem);
-			res.setMessage("修改日期成功");
-			return new SalarySystemRes(salarySystem, res.getMessage());
+			return new SalarySystemRes(salarySystem, "修改日期成功");
 		}
-
 		// 上面都沒擋掉，代表兩個皆要修改
 		total = req.getSalary() + salarySystem.getRaisePay() + salarySystem.getManagerRaisePay()
 				+ (salarySystem.getSalaryDeduct());
 		salarySystem.setSalaryDate(salaryDate);
 		salarySystem.setSalary(req.getSalary());
+		salarySystem.setTotalSalary(total);
 		salarySystemDao.save(salarySystem);
 		res.setMessage("修改日期、薪資成功");
 		return new SalarySystemRes(salarySystem, res.getMessage());
@@ -293,13 +292,8 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 	public SalarySystemRes searchSalarySystemForStaff(SalarySystemReq req) {
 		SalarySystemRes res = new SalarySystemRes();
 		boolean checkEmployeeCode = StringUtils.hasText(req.getEmployeeCode());
-		boolean checkSearchStartDate = StringUtils.hasText(req.getSearchStartDate());
-		boolean checkSearchEndDate = StringUtils.hasText(req.getSearchEndDate());
-
-		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
-
-		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
-
+		boolean checkSearchStartDate = req.getSearchStartDate()!=null;
+		boolean checkSearchEndDate = req.getSearchEndDate()!=null;
 		if (!checkEmployeeCode || (!checkEmployeeCode && checkSearchStartDate && checkSearchEndDate)) {
 			res.setMessage("參數不能空");
 			return new SalarySystemRes(res.getMessage());
@@ -308,25 +302,6 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		if (checkSearchEndDate && !checkSearchStartDate) {
 			res.setMessage("請輸入開始時間");
 			return new SalarySystemRes(res.getMessage());
-		}
-
-		if (checkSearchStartDate && checkSearchEndDate) {
-
-			boolean checkSearchYearStaetString = req.getSearchStartDate().matches(checkDateString);
-			boolean checkSearchMonthEndString = req.getSearchEndDate().matches(checkDateString);
-			if (!checkSearchYearStaetString && !checkSearchMonthEndString) {
-				res.setMessage("格式為yyyy年mm月dd日");
-				return new SalarySystemRes(res.getMessage());
-			}
-		}
-
-		if (checkSearchStartDate) {
-
-			boolean checkSearchYearStaetString = req.getSearchStartDate().matches(checkDateString);
-			if (!checkSearchYearStaetString) {
-				res.setMessage("格式為yyyy年mm月dd日");
-				return new SalarySystemRes(res.getMessage());
-			}
 		}
 
 		if (!checkSearchStartDate) {
@@ -343,8 +318,8 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 
 		if (checkSearchStartDate && checkSearchEndDate) {
 
-			LocalDate startDate = LocalDate.parse(req.getSearchStartDate(), formatDate);
-			LocalDate endDate = LocalDate.parse(req.getSearchEndDate(), formatDate);
+			LocalDate startDate = req.getSearchStartDate();
+			LocalDate endDate = req.getSearchEndDate();
 			if (endDate.isBefore(startDate)) {
 				res.setMessage("結束時間不可小於開始時間");
 				return new SalarySystemRes(res.getMessage());
@@ -362,7 +337,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 			return res;
 		}
 
-		LocalDate startDate = LocalDate.parse(req.getSearchStartDate(), formatDate);
+		LocalDate startDate =req.getSearchStartDate();
 		if (LocalDate.now().isBefore(startDate)) {
 			res.setMessage("今天時間不可小於開始時間");
 			return new SalarySystemRes(res.getMessage());
@@ -378,28 +353,26 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		res.setSalarySystemList(salarySystemListInfo);
 		return res;
 	}
-
+//===大改開始員工
 	@Override
 	public SalarySystemRes searchSalarySystemForManager(SalarySystemReq req) {
 		SalarySystemRes res = new SalarySystemRes();
 		boolean checkEmployeeCode = StringUtils.hasText(req.getEmployeeCode());
-		boolean checkSearchStartDate = StringUtils.hasText(req.getSearchStartDate());
-		boolean checkSearchEndDate = StringUtils.hasText(req.getSearchEndDate());
-		if(!StringUtils.hasText(req.getSalaryEmployeeCode())) {
+		boolean checkSearchStartDate = req.getSearchStartDate()!=null;
+		boolean checkSearchEndDate = req.getSearchEndDate()!=null;
+		if (!StringUtils.hasText(req.getSalaryEmployeeCode())) {
 			return new SalarySystemRes("請輸入主管編號");
 		}
 		Optional<EmployeeInfo> managerEmployeeInfoOp = employeeInfoDao.findById(req.getSalaryEmployeeCode());
-		if(!managerEmployeeInfoOp.isPresent()) {
+		if (!managerEmployeeInfoOp.isPresent()) {
 			return new SalarySystemRes("找不到該主管");
 		}
 		EmployeeInfo managerEmployeeInfo = managerEmployeeInfoOp.get();
-		if(!managerEmployeeInfo.getSection().equals("人資")) {
+		if (!managerEmployeeInfo.getSection().equals("人資")) {
 			return new SalarySystemRes("您不屬於人資部門");
 		}
 
-		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
-
-		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
+		
 
 		if (!checkEmployeeCode && !checkSearchStartDate && !checkSearchEndDate) {
 			List<SalarySystem> salarySystemListInfo = salarySystemDao.findByOrderBySalaryDateDesc();
@@ -412,24 +385,9 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 			return new SalarySystemRes(res.getMessage());
 		}
 
-		if (checkSearchStartDate && checkSearchEndDate) {
+		
 
-			boolean checkSearchYearStaetString = req.getSearchStartDate().matches(checkDateString);
-			boolean checkSearchMonthEndString = req.getSearchEndDate().matches(checkDateString);
-			if (!checkSearchYearStaetString && !checkSearchMonthEndString) {
-				res.setMessage("格式為yyyy年mm月dd日");
-				return new SalarySystemRes(res.getMessage());
-			}
-		}
-
-		if (checkSearchStartDate) {
-
-			boolean checkSearchYearStaetString = req.getSearchStartDate().matches(checkDateString);
-			if (!checkSearchYearStaetString) {
-				res.setMessage("格式為yyyy年mm月dd日");
-				return new SalarySystemRes(res.getMessage());
-			}
-		}
+		
 
 		if (checkEmployeeCode && !checkSearchStartDate) {
 			List<SalarySystem> salarySystemListInfo = salarySystemDao.findByEmployeeCode(req.getEmployeeCode());
@@ -441,8 +399,8 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		}
 
 		if (checkEmployeeCode && checkSearchStartDate && checkSearchEndDate) {
-			LocalDate startDate = LocalDate.parse(req.getSearchStartDate(), formatDate);
-			LocalDate endDate = LocalDate.parse(req.getSearchEndDate(), formatDate);
+			LocalDate startDate = req.getSearchStartDate();
+			LocalDate endDate = req.getSearchEndDate();
 			if (endDate.isBefore(startDate)) {
 				return new SalarySystemRes("結束時間不可小於開始時間");
 			}
@@ -457,7 +415,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		}
 
 		if (checkEmployeeCode && checkSearchStartDate) {
-			LocalDate startDate = LocalDate.parse(req.getSearchStartDate(), formatDate);
+			LocalDate startDate = req.getSearchStartDate();
 			if (LocalDate.now().isBefore(startDate)) {
 				return new SalarySystemRes("今天時間不可小於開始時間");
 			}
@@ -473,8 +431,8 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		}
 
 		if (checkSearchStartDate && checkSearchEndDate) {
-			LocalDate startDate = LocalDate.parse(req.getSearchStartDate(), formatDate);
-			LocalDate endDate = LocalDate.parse(req.getSearchEndDate(), formatDate);
+			LocalDate startDate = req.getSearchStartDate();
+			LocalDate endDate = req.getSearchEndDate();
 			if (endDate.isBefore(startDate)) {
 				return new SalarySystemRes("結束時間不可小於開始時間");
 			}
@@ -488,7 +446,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 
 		}
 
-		LocalDate startDate = LocalDate.parse(req.getSearchStartDate(), formatDate);
+		LocalDate startDate = req.getSearchStartDate();
 		if (LocalDate.now().isBefore(startDate)) {
 			return new SalarySystemRes("今天時間不可小於開始時間");
 		}
@@ -502,3 +460,4 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 	}
 
 }
+//===大改開始
