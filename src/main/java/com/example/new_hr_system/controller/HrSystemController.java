@@ -41,14 +41,20 @@ public class HrSystemController {
 		}
 
 		// 判斷身分證輸入正確與否
-		String parttern = "[A-Z][1-2]\\d{8}";
-		if (req.getId().matches(parttern) == false) {
+		String partternId = "[A-Z][1-2]\\d{8}";
+		if (req.getId().matches(partternId) == false) {
 			return new EmployeeInfoRes(HrSystemRtnCode.Employee_ID.getMessage());
 		}
 
 		// 判斷員工編號輸入正確與否
-		String parttern1 = "[A-Z]\\d{3}";
-		if (req.getId().matches(parttern1) == false) {
+		String partternCode = "[A-Z]\\d{3}";
+		if (req.getId().matches(partternId) == false) {
+			return new EmployeeInfoRes(HrSystemRtnCode.Employee_CODE.getMessage());
+		}
+		
+		// 判斷員工信箱輸入正確與否
+		String partternEmail = "^[A-Za-z0-9]+@gmail.com";
+		if (req.getId().matches(partternEmail) == false) {
 			return new EmployeeInfoRes(HrSystemRtnCode.Employee_CODE.getMessage());
 		}
 

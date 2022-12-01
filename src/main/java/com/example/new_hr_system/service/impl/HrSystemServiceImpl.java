@@ -42,10 +42,8 @@ public class HrSystemServiceImpl implements HrSystemService {
 				req.getId(), req.getEmployeeEmail(), req.getSection(), req.getLevel(), req.getSeniority(),
 				req.getSituation());// 新增資料
 		employeeInfo.setJoinTime(new Date());
-		
-		employeeInfoDao.save(employeeInfo);// 儲存
 
-		return employeeInfo;
+		return employeeInfoDao.save(employeeInfo);
 	}
 
 	@Override

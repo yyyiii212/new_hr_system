@@ -17,13 +17,25 @@ public class EmployeeInfoReq {
 	private String section;
 
 	private Integer level;
-	
+
 	private Integer seniority;
 
 	private String situation;
-	
+
 	public EmployeeInfoReq() {
-		
+
+	}
+
+	public EmployeeInfoReq(String employeeCode, String name, String id, String employeeEmail, String section, int level,
+			int seniority, String situation) {
+		this.employeeCode = employeeCode;
+		this.name = name;
+		this.id = id;
+		this.employeeEmail = employeeEmail;
+		this.section = section;
+		this.level = level;
+		this.seniority = seniority;
+		this.situation = situation;
 	}
 
 	public String getEmployeeCode() {
