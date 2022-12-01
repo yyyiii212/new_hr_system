@@ -1,9 +1,5 @@
 package com.example.new_hr_system.vo;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-
 public class EmployeeInfoReq {
 
 	private String employeeCode;
@@ -101,4 +97,5 @@ public class EmployeeInfoReq {
 	public void setSituation(String situation) {
 		this.situation = situation;
 	}
+
 }

@@ -1,6 +1,6 @@
 package com.example.new_hr_system.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -23,10 +23,10 @@ public class WorkSystem {
 	private String employeeCode;
 	
 	@Column(name = "work_time")
-	private LocalDate workTime;
+	private LocalDateTime workTime;
 	
 	@Column(name = "off_work_time")
-	private LocalDate offWorkTime;
+	private LocalDateTime offWorkTime;
 	
 	@Column(name = "attendance_status")
 	private String attendanceStatus;
@@ -54,19 +54,19 @@ public class WorkSystem {
 		this.employeeCode = employeeCode;
 	}
 
-	public LocalDate getWorkTime() {
+	public LocalDateTime getWorkTime() {
 		return workTime;
 	}
 
-	public void setWorkTime(LocalDate workTime) {
+	public void setWorkTime(LocalDateTime workTime) {
 		this.workTime = workTime;
 	}
 
-	public LocalDate getOffWorkTime() {
+	public LocalDateTime getOffWorkTime() {
 		return offWorkTime;
 	}
 
-	public void setOffWorkTime(LocalDate offWorkTime) {
+	public void setOffWorkTime(LocalDateTime offWorkTime) {
 		this.offWorkTime = offWorkTime;
 	}
 

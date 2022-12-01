@@ -1,5 +1,10 @@
 package com.example.new_hr_system;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +43,7 @@ class NewHrSystemApplicationTests {
 		
 		hrSystemService.createEmployeeInfo(employeeInfo);
 		System.out.println(employeeInfo.toString());
-		employeeInfoDao.deleteById(employeeInfo.getEmployeeCode());
+//		employeeInfoDao.deleteById(employeeInfo.getEmployeeCode());
 	}
 	
 	@Test
@@ -64,5 +69,24 @@ class NewHrSystemApplicationTests {
 		employeeInfo.setEmployeeCode("A001");
 		
 		hrSystemService.deleteEmployeeInfo(employeeInfo);
+	}
+	
+
+	public static int getDate(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+
+		return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+	}
+
+	public static void main(String[] args) throws ParseException {
+		Date date = new Date();
+		String str = date.toString();
+		SimpleDateFormat sdf = new SimpleDateFormat(str);
+		System.out.println(getDate(sdf.parse(date.toString())));
+		int x = 6;
+		int y = x * getDate(sdf.parse("2022-02-01"));
+		System.out.println(y);
+
 	}
 }
