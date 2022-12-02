@@ -1,5 +1,7 @@
 package com.example.new_hr_system.entity;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -8,26 +10,30 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+
 @Entity
 @Table(name = "absence_system")
 public class AbsenceSystem {
-	
+
 	@Id
 	@Column(name = "uuid")
 	@Type(type = "uuid-char")
 	private UUID uuid;
-	
+
 	@Column(name = "employee_code")
 	private String employeeCode;
-	
+
 	@Column(name = "absence_reason")
 	private String absenceReason;
-	
+
+	@Column(name = "absence_date")
+	private LocalDate absenceDate;
+
 	@Column(name = "yes_or_no")
 	private boolean yesOrNo;
-	
+
 	public AbsenceSystem() {
-		
+
 	}
 
 	public UUID getUuid() {
@@ -61,5 +67,13 @@ public class AbsenceSystem {
 	public void setYesOrNo(boolean yesOrNo) {
 		this.yesOrNo = yesOrNo;
 	}
-	
+
+	public LocalDate getAbsenceDate() {
+		return absenceDate;
+	}
+
+	public void setAbsenceDate(LocalDate absenceDate) {
+		this.absenceDate = absenceDate;
+	}
+
 }

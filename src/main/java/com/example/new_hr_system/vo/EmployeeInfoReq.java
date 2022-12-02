@@ -22,6 +22,8 @@ public class EmployeeInfoReq {
 
 	private String situation;
 	
+	private String uuid;
+	
 	public EmployeeInfoReq() {
 		
 	}
@@ -89,4 +91,13 @@ public class EmployeeInfoReq {
 	public void setSituation(String situation) {
 		this.situation = situation;
 	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+	
 }

@@ -1,12 +1,15 @@
 package com.example.new_hr_system.vo;
 
 import com.example.new_hr_system.entity.EmployeeInfo;
+import com.example.new_hr_system.entity.WorkSystem;
 
 public class EmployeeInfoRes {
 
 	private String message;
 
 	private EmployeeInfo employeeInfo;
+	
+
 
 	public EmployeeInfoRes() {
 
@@ -15,6 +18,7 @@ public class EmployeeInfoRes {
 	public EmployeeInfoRes(String message) {
 		this.message = message;
 	}
+	
 
 	public EmployeeInfoRes(EmployeeInfo employeeInfo, String message) {
 		this.employeeInfo = employeeInfo;

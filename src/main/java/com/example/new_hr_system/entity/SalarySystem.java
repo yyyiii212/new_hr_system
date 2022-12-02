@@ -1,5 +1,7 @@
 package com.example.new_hr_system.entity;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -17,33 +19,46 @@ public class SalarySystem {
 	@Column(name = "uuid")
 	@Type(type = "uuid-char")
 	private UUID uuid;
-	
+
 	@Column(name = "employee_code")
 	private String employeeCode;
-	
+
 	@Column(name = "name")
 	private String name;
-	
+
 	@Column(name = "salary_date")
-	private String salaryDate;
-	
+	private LocalDate salaryDate;// 薪資年月
+
 	@Column(name = "salary")
-	private int salary;
-	
+	private int salary = 20000;// 底薪 預設20000
+
 	@Column(name = "raise_pay")
-	private int raisePay;
-	
+	private int raisePay = 0;// 一般加給 預設0
+
 	@Column(name = "manager_raise_pay")
-	private int managerRaisePay;
-	
+	private int managerRaisePay = 0;// 主管加給 預設0
+
 	@Column(name = "salary_deduct")
-	private int salaryDeduct;
-	
+	private int salaryDeduct = 0;// 薪資扣款 預設0
+
 	@Column(name = "total_salary")
-	private int totalSalary;
-	
+	private int totalSalary = (salary + raisePay + managerRaisePay + (salaryDeduct)); // 預設20000
+
 	public SalarySystem() {
-		
+
+	}
+
+	public SalarySystem(UUID uuid, String employeeCode, String name, LocalDate salaryDate, int salary, int raisePay,
+			int managerRaisePay, int salaryDeduct, int totalSalary) {
+		this.uuid = uuid;
+		this.employeeCode = employeeCode;
+		this.name = name;
+		this.salaryDate = salaryDate;
+		this.salary = salary;
+		this.raisePay = raisePay;
+		this.managerRaisePay = managerRaisePay;
+		this.salaryDeduct = salaryDeduct;
+		this.totalSalary = totalSalary;
 	}
 
 	public UUID getUuid() {
@@ -70,11 +85,11 @@ public class SalarySystem {
 		this.name = name;
 	}
 
-	public String getSalaryDate() {
+	public LocalDate getSalaryDate() {
 		return salaryDate;
 	}
 
-	public void setSalaryDate(String salaryDate) {
+	public void setSalaryDate(LocalDate salaryDate) {
 		this.salaryDate = salaryDate;
 	}
 
@@ -117,5 +132,5 @@ public class SalarySystem {
 	public void setTotalSalary(int totalSalary) {
 		this.totalSalary = totalSalary;
 	}
-	
+
 }
