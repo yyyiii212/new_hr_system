@@ -15,6 +15,4 @@ public interface HrSystemService {
 
 	public EmployeeInfo deleteEmployeeInfo(EmployeeInfoReq req);
 
-	
-
 }

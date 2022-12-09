@@ -11,8 +11,9 @@ import com.example.new_hr_system.entity.AbsenceSystem;
 @Repository
 public interface AbsenceSystemDao extends JpaRepository<AbsenceSystem, UUID> {
 
-//	public AbsenceSystem findByEmployeeCode(String employeeCode);
-
 	public List<AbsenceSystem> findByEmployeeCode(String employeeCode);
+	
+	public List<AbsenceSystem> findAllByEmployeeCode(String employeeCode);
+
 
 }

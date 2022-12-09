@@ -6,6 +6,8 @@ import javax.persistence.Column;
 
 public class EmployeeInfoReq {
 
+	private String uuid;
+
 	private String employeeCode;
 
 	private String name;
@@ -17,15 +19,21 @@ public class EmployeeInfoReq {
 	private String section;
 
 	private Integer level;
-	
+
 	private Integer seniority;
 
 	private String situation;
-	
-	private String uuid;
-	
+
 	public EmployeeInfoReq() {
-		
+
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	public String getEmployeeCode() {
@@ -92,12 +100,4 @@ public class EmployeeInfoReq {
 		this.situation = situation;
 	}
 
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
-	
 }

@@ -30,7 +30,7 @@ public class SalarySystem {
 	private LocalDate salaryDate; // 薪資年月
 
 	@Column(name = "salary")
-	private int salary=20000; // 底薪 預設20000
+	private int salary = 20000; // 底薪 預設20000
 
 	@Column(name = "raise_pay")
 	private int raisePay; // 一般加給 預設0
@@ -84,6 +84,7 @@ public class SalarySystem {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 
 	public LocalDate getSalaryDate() {
 		return salaryDate;

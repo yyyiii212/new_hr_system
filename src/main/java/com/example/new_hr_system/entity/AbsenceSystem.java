@@ -1,7 +1,7 @@
 package com.example.new_hr_system.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
+
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -36,6 +36,13 @@ public class AbsenceSystem {
 
 	}
 
+	public AbsenceSystem(UUID uuid, String employeeCode, String absenceReason, LocalDate absenceDate) {
+		this.uuid = uuid;
+		this.employeeCode = employeeCode;
+		this.absenceReason = absenceReason;
+		this.absenceDate = absenceDate;
+	}
+
 	public UUID getUuid() {
 		return uuid;
 	}
@@ -60,20 +67,20 @@ public class AbsenceSystem {
 		this.absenceReason = absenceReason;
 	}
 
-	public int getYesOrNo() {
-		return yesOrNo;
-	}
-
-	public void setYesOrNo(int yesOrNo) {
-		this.yesOrNo = yesOrNo;
-	}
-
 	public LocalDate getAbsenceDate() {
 		return absenceDate;
 	}
 
 	public void setAbsenceDate(LocalDate absenceDate) {
 		this.absenceDate = absenceDate;
+	}
+
+	public int getYesOrNo() {
+		return yesOrNo;
+	}
+
+	public void setYesOrNo(int yesOrNo) {
+		this.yesOrNo = yesOrNo;
 	}
 
 }

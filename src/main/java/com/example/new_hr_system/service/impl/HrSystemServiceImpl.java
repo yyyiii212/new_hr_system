@@ -2,14 +2,23 @@ package com.example.new_hr_system.service.impl;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+
+import java.util.Set;
+
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.example.new_hr_system.constants.AbsenceSystemRtnCode;
+import com.example.new_hr_system.entity.AbsenceSystem;
 import com.example.new_hr_system.entity.EmployeeInfo;
 import com.example.new_hr_system.entity.WorkSystem;
 import com.example.new_hr_system.respository.AbsenceSystemDao;
@@ -17,6 +26,9 @@ import com.example.new_hr_system.respository.EmployeeInfoDao;
 import com.example.new_hr_system.respository.SalarySystemDao;
 import com.example.new_hr_system.respository.WorkSystemDao;
 import com.example.new_hr_system.service.ifs.HrSystemService;
+import com.example.new_hr_system.vo.AbsenceSystemReq;
+import com.example.new_hr_system.vo.AbsenceSystemRes;
+import com.example.new_hr_system.vo.AbsenceSystemResList;
 import com.example.new_hr_system.vo.EmployeeInfoReq;
 import com.example.new_hr_system.vo.EmployeeInfoRes;
 import com.example.new_hr_system.vo.WorkSystemReq;
