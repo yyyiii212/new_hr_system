@@ -43,9 +43,8 @@ public class EmployeeInfo {
 
 	}
 
-	public EmployeeInfo(String employeeCode, String name, String id, String employeeEmail, String section, int level,
+	public EmployeeInfo(String name, String id, String employeeEmail, String section, int level,
 			int seniority, String situation) {
-		this.employeeCode = employeeCode;
 		this.name = name;
 		this.id = id;
 		this.employeeEmail = employeeEmail;

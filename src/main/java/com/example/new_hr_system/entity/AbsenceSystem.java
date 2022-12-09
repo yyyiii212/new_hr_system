@@ -24,7 +24,7 @@ public class AbsenceSystem {
 	private String absenceReason;
 	
 	@Column(name = "yes_or_no")
-	private boolean yesOrNo;
+	private int yesOrNo;
 	
 	public AbsenceSystem() {
 		
@@ -54,11 +54,11 @@ public class AbsenceSystem {
 		this.absenceReason = absenceReason;
 	}
 
-	public boolean isYesOrNo() {
+	public int isYesOrNo() {
 		return yesOrNo;
 	}
 
-	public void setYesOrNo(boolean yesOrNo) {
+	public void setYesOrNo(int yesOrNo) {
 		this.yesOrNo = yesOrNo;
 	}
 	

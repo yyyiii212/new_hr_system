@@ -1,13 +1,17 @@
 package com.example.new_hr_system.vo;
 
-public class EmployeeInfoReq {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+public class EmployeeInfoReq {
+	
+	@JsonProperty("employee_code")
 	private String employeeCode;
 
 	private String name;
 
 	private String id;
-
+	
+	@JsonProperty("employee_email")
 	private String employeeEmail;
 
 	private String section;
