@@ -5,9 +5,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class NewHrSystemApplicationTests {
+	
+	@Test
+	public void addEmployeeTest() {
+		
+	}
 
 	@Test
-	void contextLoads() {
+	public void addAbsenceTest() {
+		
 	}
 
 }

@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.Column;
 
 public class EmployeeInfoReq {
+	
+	private String uuid;
 
 	private String employeeCode;
 
@@ -25,6 +27,17 @@ public class EmployeeInfoReq {
 	public EmployeeInfoReq() {
 		
 	}
+	
+
+	public String getUuid() {
+		return uuid;
+	}
+
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
 
 	public String getEmployeeCode() {
 		return employeeCode;

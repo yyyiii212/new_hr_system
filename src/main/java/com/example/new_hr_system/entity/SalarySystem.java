@@ -1,5 +1,6 @@
 package com.example.new_hr_system.entity;
 
+import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -25,7 +26,7 @@ public class SalarySystem {
 	private String name;
 	
 	@Column(name = "salary_date")
-	private String salaryDate;
+	private Date salaryDate;
 	
 	@Column(name = "salary")
 	private int salary;
@@ -70,11 +71,11 @@ public class SalarySystem {
 		this.name = name;
 	}
 
-	public String getSalaryDate() {
+	public Date getSalaryDate() {
 		return salaryDate;
 	}
 
-	public void setSalaryDate(String salaryDate) {
+	public void setSalaryDate(Date salaryDate) {
 		this.salaryDate = salaryDate;
 	}
 

@@ -1,6 +1,6 @@
 package com.example.new_hr_system.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -13,29 +13,29 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = "work_system")
 public class WorkSystem {
-	
+
 	@Id
 	@Column(name = "uuid")
 	@Type(type = "uuid-char")
 	private UUID uuid;
-	
+
 	@Column(name = "employee_code")
 	private String employeeCode;
-	
+
 	@Column(name = "work_time")
-	private Date workTime;
-	
+	private LocalDateTime workTime;
+
 	@Column(name = "off_work_time")
-	private Date offWorkTime;
-	
+	private LocalDateTime offWorkTime;
+
 	@Column(name = "attendance_status")
 	private String attendanceStatus;
-	
+
 	@Column(name = "attendance_hours")
 	private int attendanceHours;
-	
+
 	public WorkSystem() {
-		
+
 	}
 
 	public UUID getUuid() {
@@ -54,19 +54,19 @@ public class WorkSystem {
 		this.employeeCode = employeeCode;
 	}
 
-	public Date getWorkTime() {
+	public LocalDateTime getWorkTime() {
 		return workTime;
 	}
 
-	public void setWorkTime(Date workTime) {
+	public void setWorkTime(LocalDateTime workTime) {
 		this.workTime = workTime;
 	}
 
-	public Date getOffWorkTime() {
+	public LocalDateTime getOffWorkTime() {
 		return offWorkTime;
 	}
 
-	public void setOffWorkTime(Date offWorkTime) {
+	public void setOffWorkTime(LocalDateTime offWorkTime) {
 		this.offWorkTime = offWorkTime;
 	}
 
@@ -85,5 +85,5 @@ public class WorkSystem {
 	public void setAttendanceHours(int attendanceHours) {
 		this.attendanceHours = attendanceHours;
 	}
-	
+
 }
