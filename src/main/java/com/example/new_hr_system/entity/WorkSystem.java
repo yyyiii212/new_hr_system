@@ -8,6 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
@@ -22,7 +24,7 @@ public class WorkSystem {
 
 	@Column(name = "employee_code")
 	private String employeeCode;
-
+	
 	@Column(name = "work_time")
 	private LocalDateTime workTime;
 

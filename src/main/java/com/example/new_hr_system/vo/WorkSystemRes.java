@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.new_hr_system.entity.WorkSystem;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WorkSystemRes {
 	private String message;
@@ -13,9 +14,13 @@ public class WorkSystemRes {
 	public WorkSystemRes() {
 	}
 
+	public WorkSystemRes(String message) {
+		this.message = message;
+	}
+
 	public WorkSystemRes(WorkSystem workSystem, String message) {
-		this.workSystem=workSystem;
-		this.message=message;
+		this.workSystem = workSystem;
+		this.message = message;
 	}
 
 	public String getMessage() {
@@ -41,6 +46,5 @@ public class WorkSystemRes {
 	public void setWorkInfoList(List<WorkSystem> workInfoList) {
 		this.workInfoList = workInfoList;
 	}
-	
 
 }

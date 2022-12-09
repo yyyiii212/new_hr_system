@@ -27,22 +27,22 @@ public class SalarySystem {
 	private String name;
 
 	@Column(name = "salary_date")
-	private LocalDate salaryDate;// 薪資年月
+	private LocalDate salaryDate; // 薪資年月
 
 	@Column(name = "salary")
-	private int salary = 20000;// 底薪 預設20000
+	private int salary=20000; // 底薪 預設20000
 
 	@Column(name = "raise_pay")
-	private int raisePay = 0;// 一般加給 預設0
+	private int raisePay; // 一般加給 預設0
 
 	@Column(name = "manager_raise_pay")
-	private int managerRaisePay = 0;// 主管加給 預設0
+	private int managerRaisePay; // 主管加給 預設0
 
 	@Column(name = "salary_deduct")
-	private int salaryDeduct = 0;// 薪資扣款 預設0
+	private int salaryDeduct; // 薪資扣款 預設0
 
 	@Column(name = "total_salary")
-	private int totalSalary = (salary + raisePay + managerRaisePay + (salaryDeduct)); // 預設20000
+	private int totalSalary = (getSalary() + getRaisePay() + getManagerRaisePay() + (getSalaryDeduct())); // 預設20000
 
 	public SalarySystem() {
 
