@@ -80,10 +80,8 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 	@Override
 	public AbsenceSystemRes deleteAbsence(AbsenceSystemReq req) {
 
-//		UUID uuid = UUID.fromString(req.getUuid());
-//		Optional<AbsenceSystem> absenceOp = absenceSystemDao.findById(uuid);
-
-		Optional<AbsenceSystem> absenceOp = absenceSystemDao.findById(req.getUuid());
+		UUID uuid = UUID.fromString(req.getUuid());
+		Optional<AbsenceSystem> absenceOp = absenceSystemDao.findById(uuid);
 
 		if (!absenceOp.isPresent()) {
 			return new AbsenceSystemRes(AbsenceSystemRtnCode.ABSENCE_EMPTY.getMessage());
@@ -113,8 +111,8 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 	// 員工輸入年月尋找當月假單
 	@Override
 	public AbsenceSystemResList getAbsenceByEmployeeCodeAndDate(AbsenceSystemReq req, HttpSession httpSession) {
-		
-		if(!StringUtils.hasText(req.getAbsenceDate().toString())) {
+
+		if (!StringUtils.hasText(req.getAbsenceDate().toString())) {
 			return new AbsenceSystemResList(AbsenceSystemRtnCode.DATE_EMPTY.getMessage());
 		}
 		Object attValue = httpSession.getAttribute("employeeCode");
@@ -123,25 +121,24 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 			String employeeCode = attValue.toString();
 			List<AbsenceSystem> absenceList = absenceSystemDao.findAllByEmployeeCode(employeeCode);
 			List<AbsenceSystem> chosenList = new ArrayList<>();
-			
-			for(AbsenceSystem item : absenceList) {
+
+			for (AbsenceSystem item : absenceList) {
 				int itemYear = item.getAbsenceDate().getYear();
 				int itemMonth = item.getAbsenceDate().getMonthValue();
-				
-				if(req.getYear() == itemYear && req.getMonth() == itemMonth) {
+
+				if (req.getYear() == itemYear && req.getMonth() == itemMonth) {
 					chosenList.add(item);
 				}
 			}
-			if(CollectionUtils.isEmpty(chosenList)) {
+			if (CollectionUtils.isEmpty(chosenList)) {
 				return new AbsenceSystemResList(AbsenceSystemRtnCode.DATE_OF_ABSENCE_EMPTY.getMessage());
 			}
-			
+
 			AbsenceSystemResList res = new AbsenceSystemResList();
 			res.setAbsenceSystemList(chosenList);
 			return res;
 		}
 		return new AbsenceSystemResList(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
-	
 
 	}
 
@@ -194,10 +191,10 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 	// 主管批示假單,並寄送email給員工
 	@Override
 	public AbsenceSystemRes checkYesOrNo(AbsenceSystemReq req) {
-//		 UUID uuid = UUID.fromString(req.getUuid());
-//		Optional<AbsenceSystem> absenceOp = absenceSystemDao.findById(uuid);
 
-		Optional<AbsenceSystem> absenceOp = absenceSystemDao.findById(req.getUuid());
+		UUID uuid = UUID.fromString(req.getUuid());
+		Optional<AbsenceSystem> absenceOp = absenceSystemDao.findById(uuid);
+
 		AbsenceSystem absence = absenceOp.get();
 
 		if (!absenceOp.isPresent()) {

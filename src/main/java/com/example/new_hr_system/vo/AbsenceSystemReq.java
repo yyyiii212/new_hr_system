@@ -1,16 +1,12 @@
 package com.example.new_hr_system.vo;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class AbsenceSystemReq {
 	
-	
-//	private String uuid;
-	
-	private UUID uuid;
+	private String uuid;
 	
 	private String employeeCode;
 	
@@ -33,26 +29,16 @@ public class AbsenceSystemReq {
 		
 	}
 	
-//	public String getUuid() {
-//		return uuid;
-//	}
-//
-//	public void setUuid(String uuid) {
-//		this.uuid = uuid;
-//	}
-	
-	
-
-	public String getEmployeeCode() {
-		return employeeCode;
-	}
-
-	public UUID getUuid() {
+	public String getUuid() {
 		return uuid;
 	}
 
-	public void setUuid(UUID uuid) {
+	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+	
+	public String getEmployeeCode() {
+		return employeeCode;
 	}
 
 	public void setEmployeeCode(String employeeCode) {
