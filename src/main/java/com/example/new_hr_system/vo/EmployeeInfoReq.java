@@ -21,12 +21,14 @@ public class EmployeeInfoReq {
 	private Integer seniority;
 
 	private String situation;
+	
+	private String title;
 
 	public EmployeeInfoReq() {
 
 	}
 
-	public EmployeeInfoReq(String employeeCode, String name, String id, String employeeEmail, String section, int level,
+	public EmployeeInfoReq(String employeeCode, String name, String id, String employeeEmail, String section, Integer level,
 			int seniority, String situation) {
 		this.employeeCode = employeeCode;
 		this.name = name;
@@ -100,6 +102,14 @@ public class EmployeeInfoReq {
 
 	public void setSituation(String situation) {
 		this.situation = situation;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 }

@@ -87,6 +87,5 @@ class NewHrSystemApplicationTests {
 		int x = 6;
 		int y = x * getDate(sdf.parse("2022-02-01"));
 		System.out.println(y);
-
 	}
 }

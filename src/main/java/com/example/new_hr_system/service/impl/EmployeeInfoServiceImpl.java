@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.example.new_hr_system.constants.EmployeeInfoRtnCode;
 import com.example.new_hr_system.entity.EmployeeInfo;
 import com.example.new_hr_system.entity.SalarySystem;
 import com.example.new_hr_system.respository.AbsenceSystemDao;
@@ -40,7 +41,7 @@ public class EmployeeInfoServiceImpl implements EmployeeInfoService {
 		
 		if(employeeInfoOp.isPresent()) {
 			EmployeeInfo employeeInfo = employeeInfoOp.get();
-			if(req.getId() == employeeInfo.getId()) {
+			if(employeeInfo.getId().equals(req.getId())) {
 				return employeeInfo;
 			}
 		}
@@ -58,7 +59,7 @@ public class EmployeeInfoServiceImpl implements EmployeeInfoService {
 		}
 		// 新增資料
 		EmployeeInfo employeeInfo = new EmployeeInfo(req.getName(), req.getId(), req.getEmployeeEmail(),
-				req.getSection(), req.getLevel(), req.getSeniority(), req.getSituation());
+				req.getSection(), req.getSituation());
 		employeeInfo.setJoinTime(new Date());
 		// 判斷部門
 		if (req.getSection().equals("人資")) {
@@ -70,6 +71,17 @@ public class EmployeeInfoServiceImpl implements EmployeeInfoService {
 		if (req.getSection().equals("敲詐")) {
 			employeeInfo.setEmployeeCode("C" + req.getEmployeeCode());
 		}
+		
+		if (req.getTitle().equals("員工")) {
+			employeeInfo.setLevel(0);
+		}
+		if (req.getTitle().equals("主管")) {
+			employeeInfo.setLevel(1);
+		}
+		if (req.getTitle().equals("經理")) {
+			employeeInfo.setLevel(2);
+		}
+		employeeInfo.setSeniority(0);
 
 		return employeeInfoDao.save(employeeInfo);
 	}
@@ -94,6 +106,18 @@ public class EmployeeInfoServiceImpl implements EmployeeInfoService {
 
 		return employeeInfoList;
 	}
+	
+	@Override
+	public EmployeeInfo readOneEmployeeInfo(EmployeeInfoReq req) {
+		
+		// 找DB有無重複的資料
+		Optional<EmployeeInfo> employeeInfoOp = employeeInfoDao.findById(req.getEmployeeCode());
+
+		// 取得查詢的資料
+		EmployeeInfo employeeInfo = employeeInfoOp.get();
+
+		return employeeInfo;
+	}
 
 	@Override
 	public EmployeeInfo updateEmployeeInfo(EmployeeInfoReq req) {
@@ -107,12 +131,20 @@ public class EmployeeInfoServiceImpl implements EmployeeInfoService {
 		// 取得想修改的資料
 		EmployeeInfo employeeInfo = employeeInfoOp.get();
 		// 修改資料
+		if (req.getTitle().equals("員工")) {
+			employeeInfo.setLevel(0);
+		}
+		if (req.getTitle().equals("主管")) {
+			employeeInfo.setLevel(1);
+		}
+		if (req.getTitle().equals("經理")) {
+			employeeInfo.setLevel(2);
+		}
 		employeeInfo.setName(req.getName());
 		employeeInfo.setId(req.getId());
 		employeeInfo.setEmployeeEmail(req.getEmployeeEmail());
 		employeeInfo.setSection(req.getSection());
-		employeeInfo.setLevel(req.getLevel());
-		employeeInfo.setSeniority(req.getSeniority());
+//		employeeInfo.setSeniority(req.getSeniority());
 		employeeInfo.setSituation(req.getSituation());
 		employeeInfoDao.save(employeeInfo);
 

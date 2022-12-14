@@ -9,11 +9,15 @@ public interface EmployeeInfoService {
 	
 	//登入畫面帳密的判斷
 	public EmployeeInfo loginJudgment(EmployeeInfoReq req);
+	
 	//新增員工資料
 	public EmployeeInfo createEmployeeInfo(EmployeeInfoReq req);
 	
-	//搜尋員工資料
+	//搜尋全部員工資料
 	public List<EmployeeInfo> readEmployeeInfo(EmployeeInfoReq req);
+	
+	//搜尋單一員工資料
+	public EmployeeInfo readOneEmployeeInfo(EmployeeInfoReq req);
 	
 	//修改員工資料
 	public EmployeeInfo updateEmployeeInfo(EmployeeInfoReq req);

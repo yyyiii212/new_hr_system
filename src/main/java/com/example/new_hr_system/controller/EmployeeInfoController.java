@@ -39,10 +39,6 @@ public class EmployeeInfoController {
 			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_SECTION_REQUIRED.getMessage());
 		} else if (!StringUtils.hasText(req.getSituation())) {
 			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_SITUATION_REQUIRED.getMessage());
-		} else if (req.getLevel() == null || req.getLevel() < 0 || req.getLevel() >= 3) {
-			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_LEVEL_REQUIRED.getMessage());
-		} else if (req.getSeniority() == null || req.getSeniority() < 0) {
-			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_SENIORITY_REQUIRED.getMessage());
 		}
 
 		// 判斷身分證輸入正確與否
@@ -51,12 +47,6 @@ public class EmployeeInfoController {
 			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_ID_REQUIRED.getMessage());
 		}
 
-		// 判斷員工編號輸入正確與否
-		String partternCode = "\\d{3}";
-		if (req.getEmployeeCode().matches(partternCode) == false) {
-			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_CODE_REQUIRED.getMessage());
-		}
-		
 		// 判斷員工信箱輸入正確與否
 		String partternEmail = "^[A-Za-z0-9]+@gmail.com";
 		if (req.getEmployeeEmail().matches(partternEmail) == false) {
@@ -75,7 +65,7 @@ public class EmployeeInfoController {
 		}else if (!StringUtils.hasText(req.getId())) {
 			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_ID_REQUIRED.getMessage());
 		}
-		String partternCode = "\\d{3}";
+		String partternCode = "[A-Z]\\d{3}";
 		if (req.getEmployeeCode().matches(partternCode) == false) {
 			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_CODE_REQUIRED.getMessage());
 		}
@@ -86,6 +76,9 @@ public class EmployeeInfoController {
 		
 		//登入畫面(員工編號與身分證)判斷
 		EmployeeInfo employeeInfo = employeeInfoService.loginJudgment(req);
+		if(employeeInfo == null) {
+			return new EmployeeInfoRes(EmployeeInfoRtnCode.ERROR.getMessage());
+		}
 		
 		//暫存員工編號
 		httpSession.setAttribute("employee_code", req.getEmployeeCode());
@@ -99,6 +92,11 @@ public class EmployeeInfoController {
 		EmployeeInfoRes check = checkParamEmployeeInfo(req);
 		if (check != null) {
 			return check;
+		}
+		// 判斷員工編號輸入正確與否
+		String partternCode = "\\d{3}";
+		if (req.getEmployeeCode().matches(partternCode) == false) {
+			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_CODE_REQUIRED.getMessage());
 		}
 
 		EmployeeInfo employeeInfo = employeeInfoService.createEmployeeInfo(req);
@@ -115,13 +113,28 @@ public class EmployeeInfoController {
 	public EmployeeInfoRes readEmployeeInfo(@RequestBody EmployeeInfoReq req) {
 
 		// 找無資料就回傳錯誤訊息
-		List<EmployeeInfo> employeeInfoList1 = employeeInfoService.readEmployeeInfo(req);
-		if (employeeInfoList1 == null) {
+		List<EmployeeInfo> employeeInfoList = employeeInfoService.readEmployeeInfo(req);
+		if (employeeInfoList == null) {
 			return  new EmployeeInfoRes(EmployeeInfoRtnCode.ERROR.getMessage());
 		}
 		
 		
-		return new EmployeeInfoRes(employeeInfoList1,  EmployeeInfoRtnCode.SUCCESSFUL.getMessage());
+		return new EmployeeInfoRes(employeeInfoList,  EmployeeInfoRtnCode.SUCCESSFUL.getMessage());
+	}
+	
+	@PostMapping(value = "/api/read_one_employee_info")
+	public EmployeeInfoRes readOneEmployeeInfo(@RequestBody EmployeeInfoReq req) {
+		
+		if (!StringUtils.hasText(req.getEmployeeCode())) {
+			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_CODE_REQUIRED.getMessage());
+		} 
+		
+		EmployeeInfo employeeInfo = employeeInfoService.readOneEmployeeInfo(req);
+		if(employeeInfo == null) {
+			return  new EmployeeInfoRes(EmployeeInfoRtnCode.ERROR.getMessage());
+		}
+		
+		return new EmployeeInfoRes(employeeInfo,  EmployeeInfoRtnCode.SUCCESSFUL.getMessage());
 	}
 
 	@PostMapping(value = "/api/update_employee_info")
@@ -130,6 +143,11 @@ public class EmployeeInfoController {
 		EmployeeInfoRes check = checkParamEmployeeInfo(req);
 		if (check != null) {
 			return check;
+		}
+		// 判斷員工編號輸入正確與否
+		String partternCode = "[A-Z]\\d{3}";
+		if (req.getEmployeeCode().matches(partternCode) == false) {
+			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_CODE_REQUIRED.getMessage());
 		}
 
 		EmployeeInfo employeeInfo = employeeInfoService.updateEmployeeInfo(req);
@@ -147,7 +165,7 @@ public class EmployeeInfoController {
 		
 		// 判斷有無輸入值，沒有輸入值就回傳訊息
 		if (!StringUtils.hasText(req.getEmployeeCode())) { 
-			return new EmployeeInfoRes();
+			return new EmployeeInfoRes(EmployeeInfoRtnCode.Employee_CODE_REQUIRED.getMessage());
 		}
 		
 		String partternCode = "[A-Z]\\d{3}";

@@ -28,7 +28,7 @@ public class EmployeeInfo {
 	private String section;
 
 	@Column(name = "level")
-	private int level;
+	private Integer level;
 
 	@Column(name = "seniority")
 	private int seniority;
@@ -43,14 +43,11 @@ public class EmployeeInfo {
 
 	}
 
-	public EmployeeInfo(String name, String id, String employeeEmail, String section, int level,
-			int seniority, String situation) {
+	public EmployeeInfo(String name, String id, String employeeEmail, String section, String situation) {
 		this.name = name;
 		this.id = id;
 		this.employeeEmail = employeeEmail;
 		this.section = section;
-		this.level = level;
-		this.seniority = seniority;
 		this.situation = situation;
 	}
 
@@ -90,11 +87,11 @@ public class EmployeeInfo {
 		return level;
 	}
 
-	public void setLevel(int level) {
+	public void setLevel(Integer level) {
 		this.level = level;
 	}
 
-	public int getSeniority() {
+	public Integer getSeniority() {
 		return seniority;
 	}
 
