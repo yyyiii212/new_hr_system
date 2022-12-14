@@ -31,7 +31,7 @@ public class AbsenceSystem {
 
 	@Column(name = "yes_or_no")
 	private int yesOrNo;
-
+	
 	public AbsenceSystem() {
 
 	}
@@ -78,6 +78,7 @@ public class AbsenceSystem {
 	public int getYesOrNo() {
 		return yesOrNo;
 	}
+	
 
 	public void setYesOrNo(int yesOrNo) {
 		this.yesOrNo = yesOrNo;

@@ -3,10 +3,7 @@ package com.example.new_hr_system.service.impl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,18 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.example.new_hr_system.constants.HrSystemRtnCode;
-import com.example.new_hr_system.entity.AbsenceSystem;
-import com.example.new_hr_system.entity.SalarySystem;
 import com.example.new_hr_system.entity.WorkSystem;
 import com.example.new_hr_system.respository.AbsenceSystemDao;
 import com.example.new_hr_system.respository.EmployeeInfoDao;
 import com.example.new_hr_system.respository.SalarySystemDao;
 import com.example.new_hr_system.respository.WorkSystemDao;
-import com.example.new_hr_system.service.ifs.HrSystemService;
 import com.example.new_hr_system.service.ifs.WorkSystemService;
-import com.example.new_hr_system.vo.EmployeeInfoRes;
-import com.example.new_hr_system.vo.SalarySystemRes;
 import com.example.new_hr_system.vo.WorkSystemReq;
 import com.example.new_hr_system.vo.WorkSystemRes;
 

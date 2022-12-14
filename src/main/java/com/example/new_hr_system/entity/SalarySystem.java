@@ -91,7 +91,7 @@ public class SalarySystem {
 	}
 
 	public void setSalaryDate(LocalDate salaryDate) {
-		this.salaryDate = salaryDate;
+		
 	}
 
 	public int getSalary() {

@@ -1,19 +1,17 @@
 package com.example.new_hr_system.vo;
 
-import java.util.Date;
-
-import javax.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EmployeeInfoReq {
 
-	private String uuid;
-
+	@JsonProperty("employee_code")
 	private String employeeCode;
 
 	private String name;
 
 	private String id;
-
+	
+	@JsonProperty("employee_email")
 	private String employeeEmail;
 
 	private String section;
@@ -23,17 +21,22 @@ public class EmployeeInfoReq {
 	private Integer seniority;
 
 	private String situation;
+	
+	private String title;
 
 	public EmployeeInfoReq() {
 
 	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public EmployeeInfoReq(String employeeCode, String name, String id, String employeeEmail, String section, Integer level,
+			int seniority, String situation) {
+		this.employeeCode = employeeCode;
+		this.name = name;
+		this.id = id;
+		this.employeeEmail = employeeEmail;
+		this.section = section;
+		this.level = level;
+		this.seniority = seniority;
+		this.situation = situation;
 	}
 
 	public String getEmployeeCode() {
@@ -99,5 +102,11 @@ public class EmployeeInfoReq {
 	public void setSituation(String situation) {
 		this.situation = situation;
 	}
+	public String getTitle() {
+		return title;
+	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
 }

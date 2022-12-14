@@ -1,15 +1,18 @@
 package com.example.new_hr_system.vo;
 
-import com.example.new_hr_system.entity.EmployeeInfo;
-import com.example.new_hr_system.entity.WorkSystem;
+import java.util.List;
 
+import com.example.new_hr_system.entity.EmployeeInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployeeInfoRes {
 
 	private String message;
 
 	private EmployeeInfo employeeInfo;
 	
-
+	private List<EmployeeInfo> employeeInfoList;
 
 	public EmployeeInfoRes() {
 
@@ -25,6 +28,11 @@ public class EmployeeInfoRes {
 		this.message = message;
 	}
 
+	public EmployeeInfoRes(List<EmployeeInfo> employeeInfoList, String message) {
+		this.employeeInfoList = employeeInfoList;
+		this.message = message;
+	}
+	
 	public String getMessage() {
 		return message;
 	}
@@ -40,4 +48,13 @@ public class EmployeeInfoRes {
 	public void setEmployeeInfo(EmployeeInfo employeeInfo) {
 		this.employeeInfo = employeeInfo;
 	}
+
+	public List<EmployeeInfo> getEmployeeInfoList() {
+		return employeeInfoList;
+	}
+
+	public void setEmployeeInfoList(List<EmployeeInfo> employeeInfoList) {
+		this.employeeInfoList = employeeInfoList;
+	}
+	
 }

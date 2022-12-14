@@ -1,17 +1,12 @@
 package com.example.new_hr_system.entity;
 
 import java.time.LocalDateTime;
-
-import java.util.Date;
-
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
@@ -30,9 +25,11 @@ public class WorkSystem {
 	@Column(name = "work_time")
 	private LocalDateTime workTime;
 
+	
 	@Column(name = "off_work_time")
 	private LocalDateTime offWorkTime;
 
+	
 	@Column(name = "attendance_status")
 	private String attendanceStatus;
 
