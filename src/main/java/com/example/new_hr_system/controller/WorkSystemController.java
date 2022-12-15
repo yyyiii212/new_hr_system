@@ -48,7 +48,7 @@ public class WorkSystemController {
 //		if (!employeeCodeString.equals(req.getEmployeeCode()) || employeeCode == null) {
 //			return new WorkSystemRes("請輸入自己的員工編號HttpSession");
 //		}
-		
+
 		return workSystemService.punchToWork(req);
 	}
 
@@ -102,6 +102,12 @@ public class WorkSystemController {
 	@PostMapping(value = "/api/getWorkInfoListToday")
 	public WorkSystemRes getWorkInfoListToday(@RequestBody WorkSystemReq req) {
 		return workSystemService.getWorkInfoListToday(req);
+	}
+
+	// ---打印出打卡資訊getWorkInfoListAbsenteeism
+	@PostMapping(value = "/api/getWorkInfoListAbsenteeism")
+	public WorkSystemRes getWorkInfoListAbsenteeism(@RequestBody WorkSystemReq req) {
+		return workSystemService.getWorkInfoListAbsenteeism(req);
 	}
 
 }

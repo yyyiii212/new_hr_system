@@ -13,7 +13,7 @@ import com.example.new_hr_system.vo.AbsenceSystemReq;
 import com.example.new_hr_system.vo.AbsenceSystemRes;
 import com.example.new_hr_system.vo.AbsenceSystemResList;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 public class AbsenceSystemController {
 	

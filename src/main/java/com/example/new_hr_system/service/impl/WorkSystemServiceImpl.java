@@ -3,6 +3,7 @@ package com.example.new_hr_system.service.impl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,7 +13,6 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
 
 //import com.example.new_hr_system.constants.HrSystemRtnCode;
 import com.example.new_hr_system.entity.AbsenceSystem;
@@ -408,7 +408,7 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		LocalDateTime endDateTime = endDate.atStartOfDay();
 		workSystemDao.deleteByWorkTimeBetween(startDateTime, endDateTime);
 		List<WorkSystem> workInfoList = workSystemDao.findAllByOrderByWorkTimeDesc();
-		return new WorkSystemRes(workInfoList,"刪除成功");
+		return new WorkSystemRes(workInfoList, "刪除成功");
 	}
 
 	// =====新增曠職資料(給主管的)
@@ -490,18 +490,18 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 			res.setMessage("參數值不能為空");
 			return new WorkSystemRes(res.getMessage());
 		}
-		if (StringUtils.hasText(req.getAbsenteeismDate())) {
-			DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
-			LocalDate absenteeismDate = LocalDate.parse(req.getAbsenteeismDate(), formatDate);
-			LocalDateTime absenteeismDateTime = absenteeismDate.atStartOfDay();
-			List<WorkSystem> workInfoList = workSystemDao
-					.findByEmployeeCodeAndWorkTimeGreaterThanEqual(req.getEmployeeCode(), absenteeismDateTime);
-			if (workInfoList.isEmpty()) {
-				return new WorkSystemRes("查無資料");
-			}
-			res.setWorkInfoList(workInfoList);
-			return res;
-		}
+//		if (StringUtils.hasText(req.getAbsenteeismDate())) {
+//			DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
+//			LocalDate absenteeismDate = LocalDate.parse(req.getAbsenteeismDate(), formatDate);
+//			LocalDateTime absenteeismDateTime = absenteeismDate.atStartOfDay();
+//			List<WorkSystem> workInfoList = workSystemDao
+//					.findByEmployeeCodeAndWorkTimeGreaterThanEqual(req.getEmployeeCode(), absenteeismDateTime);
+//			if (workInfoList.isEmpty()) {
+//				return new WorkSystemRes("查無資料");
+//			}
+//			res.setWorkInfoList(workInfoList);
+//			return res;
+//		}
 		LocalDate nowDate = LocalDate.now();
 		LocalDateTime nowDateTime = nowDate.atStartOfDay();
 		List<WorkSystem> workInfoList = workSystemDao
@@ -524,6 +524,25 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		EmployeeInfo employeeInfo = employeeInfoOp.get();
 		res.setMessage("登入成功");
 		return new WorkSystemRes(employeeInfo, res.getMessage());
+	}
+
+	@Override
+	public WorkSystemRes getWorkInfoListAbsenteeism(WorkSystemReq req) {
+		WorkSystemRes res = new WorkSystemRes();
+		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
+		LocalDate absenteeismDate = LocalDate.parse(req.getAbsenteeismDate(), formatDate);
+		if (!StringUtils.hasText(req.getAbsenteeismDate()) || !StringUtils.hasText(req.getEmployeeCode())) {
+			res.setMessage("參數值或日期不能為空");
+			return new WorkSystemRes(res.getMessage());
+		}
+		LocalDateTime absenteeismDateTime = absenteeismDate.atStartOfDay();
+		List<WorkSystem> workInfoList = workSystemDao.findByEmployeeCodeAndWorkTime(req.getEmployeeCode(),
+				absenteeismDateTime);
+		if (workInfoList.isEmpty()) {
+			return new WorkSystemRes("查無資料");
+		}
+		res.setWorkInfoList(workInfoList);
+		return res;
 	}
 
 }

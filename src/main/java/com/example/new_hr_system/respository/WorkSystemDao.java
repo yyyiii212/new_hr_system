@@ -32,8 +32,12 @@ public interface WorkSystemDao extends JpaRepository<WorkSystem, UUID> {
 	public List<WorkSystem> findByEmployeeCodeAndWorkTimeBetweenOrderByWorkTimeDesc(String employeeCode,
 			LocalDateTime lcalDateStart, LocalDateTime lcalDateEnd);
 
-	public List<WorkSystem> findByEmployeeCodeAndWorkTimeGreaterThanEqual(String employeeCode, LocalDateTime lcalDateStart);
+	public List<WorkSystem> findByEmployeeCodeAndWorkTimeGreaterThanEqual(String employeeCode,
+			LocalDateTime lcalDateStart);
 
 	public List<WorkSystem> findAllByOrderByWorkTimeDesc();
+
+	// §R°£ÃmÂ¾
+	public List<WorkSystem> findByEmployeeCodeAndWorkTime(String employeeCode, LocalDateTime lcalDateStart);
 
 }
