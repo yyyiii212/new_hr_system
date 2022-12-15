@@ -529,5 +529,26 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		res.setMessage("登入成功");
 		return new WorkSystemRes(employeeInfo, res.getMessage());
 	}
+	
+	@Override
+	public WorkSystemRes getWorkInfoListAbsenteeism(WorkSystemReq req) {
+		WorkSystemRes res = new WorkSystemRes();
+		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
+		LocalDate absenteeismDate = LocalDate.parse(req.getAbsenteeismDate(), formatDate);
+		if (!StringUtils.hasText(req.getAbsenteeismDate()) || !StringUtils.hasText(req.getEmployeeCode())) {
+			res.setMessage("參數值或日期不能為空");
+			return new WorkSystemRes(res.getMessage());
+		}
+		LocalDateTime absenteeismDateTime = absenteeismDate.atStartOfDay();
+		List<WorkSystem> workInfoList = workSystemDao.findByEmployeeCodeAndWorkTime(req.getEmployeeCode(),
+				absenteeismDateTime);
+		if (workInfoList.isEmpty()) {
+			return new WorkSystemRes("查無資料");
+		}
+		res.setWorkInfoList(workInfoList);
+		return res;
+	}
+
+	
 
 }
