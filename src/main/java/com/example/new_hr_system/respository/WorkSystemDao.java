@@ -1,6 +1,5 @@
 package com.example.new_hr_system.respository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +36,6 @@ public interface WorkSystemDao extends JpaRepository<WorkSystem, UUID> {
 
 	public List<WorkSystem> findAllByOrderByWorkTimeDesc();
 
-	// §R°£ÃmÂ¾
 	public List<WorkSystem> findByEmployeeCodeAndWorkTime(String employeeCode, LocalDateTime lcalDateStart);
 
 }
