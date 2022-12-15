@@ -2,6 +2,7 @@ package com.example.new_hr_system.vo;
 
 import java.util.List;
 
+import com.example.new_hr_system.entity.EmployeeInfo;
 import com.example.new_hr_system.entity.WorkSystem;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class WorkSystemRes {
 	private String message;
 	private WorkSystem workSystem;
+	private EmployeeInfo employeeInfo;
 	private List<WorkSystem> workInfoList;
 
 	public WorkSystemRes() {
@@ -17,9 +19,18 @@ public class WorkSystemRes {
 	public WorkSystemRes(String message) {
 		this.message = message;
 	}
+	public WorkSystemRes(List<WorkSystem> workInfoList, String message) {
+		this.workInfoList = workInfoList;
+		this.message = message;
+	}
 
 	public WorkSystemRes(WorkSystem workSystem, String message) {
 		this.workSystem = workSystem;
+		this.message = message;
+	}
+
+	public WorkSystemRes(EmployeeInfo employeeInfo, String message) {
+		this.employeeInfo = employeeInfo;
 		this.message = message;
 	}
 
@@ -45,6 +56,14 @@ public class WorkSystemRes {
 
 	public void setWorkInfoList(List<WorkSystem> workInfoList) {
 		this.workInfoList = workInfoList;
+	}
+
+	public EmployeeInfo getEmployeeInfo() {
+		return employeeInfo;
+	}
+
+	public void setEmployeeInfo(EmployeeInfo employeeInfo) {
+		this.employeeInfo = employeeInfo;
 	}
 
 }

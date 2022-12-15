@@ -3,6 +3,7 @@ package com.example.new_hr_system.controller;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +14,7 @@ import com.example.new_hr_system.service.ifs.SalarySystemService;
 import com.example.new_hr_system.vo.SalarySystemReq;
 import com.example.new_hr_system.vo.SalarySystemRes;
 import com.example.new_hr_system.vo.WorkSystemRes;
-
+//@CrossOrigin
 @RestController
 public class SalarySystemController {
 	@Autowired
