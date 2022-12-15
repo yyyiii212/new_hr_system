@@ -3,8 +3,6 @@ package com.example.new_hr_system.vo;
 public class WorkSystemReq {
 	private String uuid;
 	private String employeeCode;
-	private String searchYear;
-	private String searcMonth;
 	private String searchStartDate;
 	private String searchEndDate;
 	private String password;
@@ -25,22 +23,6 @@ public class WorkSystemReq {
 
 	public void setEmployeeCode(String employeeCode) {
 		this.employeeCode = employeeCode;
-	}
-
-	public String getSearchYear() {
-		return searchYear;
-	}
-
-	public void setSearchYear(String searchYear) {
-		this.searchYear = searchYear;
-	}
-
-	public String getSearcMonth() {
-		return searcMonth;
-	}
-
-	public void setSearcMonth(String searcMonth) {
-		this.searcMonth = searcMonth;
 	}
 
 	public String getPassword() {

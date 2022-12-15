@@ -31,4 +31,9 @@ public interface WorkSystemDao extends JpaRepository<WorkSystem, UUID> {
 	// 查詢上班狀況 時間區間、員工編號
 	public List<WorkSystem> findByEmployeeCodeAndWorkTimeBetweenOrderByWorkTimeDesc(String employeeCode,
 			LocalDateTime lcalDateStart, LocalDateTime lcalDateEnd);
+
+	public List<WorkSystem> findByEmployeeCodeAndWorkTimeGreaterThanEqual(String employeeCode, LocalDateTime lcalDateStart);
+
+	public List<WorkSystem> findAllByOrderByWorkTimeDesc();
+
 }
