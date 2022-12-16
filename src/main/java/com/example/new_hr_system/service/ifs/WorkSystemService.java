@@ -1,9 +1,14 @@
 package com.example.new_hr_system.service.ifs;
 
+import javax.servlet.http.HttpSession;
+
 import com.example.new_hr_system.vo.WorkSystemReq;
 import com.example.new_hr_system.vo.WorkSystemRes;
 
 public interface WorkSystemService {
+
+	// 取得按下登入時綁住EmployeeCode
+	public WorkSystemRes employeeCodeLogin(WorkSystemReq req);
 
 	// ---上班打卡 c
 	public WorkSystemRes punchToWork(WorkSystemReq req);
@@ -25,5 +30,11 @@ public interface WorkSystemService {
 
 	// ---刪除<曠職>行為 (給主管key)
 	public WorkSystemRes deleteAbsenteeismForManager(WorkSystemReq req);
+
+	// ---打卡下班時，叫出List產生出button讓用戶可藉由按鈕取得uuid
+	public WorkSystemRes getWorkInfoListToday(WorkSystemReq req);
+
+	// ---刪除曠職時，叫出List產生出button讓用戶可藉由按鈕取得uuid
+	public WorkSystemRes getWorkInfoListAbsenteeism(WorkSystemReq req);
 
 }
