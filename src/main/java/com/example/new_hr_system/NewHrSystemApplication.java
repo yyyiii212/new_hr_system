@@ -10,4 +10,5 @@ public class NewHrSystemApplication {
 		SpringApplication.run(NewHrSystemApplication.class, args);
 	}
 
+	
 }
