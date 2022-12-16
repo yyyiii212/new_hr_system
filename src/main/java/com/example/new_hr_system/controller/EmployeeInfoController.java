@@ -20,6 +20,7 @@ import com.example.new_hr_system.vo.EmployeeInfoRes;
 @RestController
 public class EmployeeInfoController {
 
+	
 	@Autowired
 	private EmployeeInfoService employeeInfoService;
 
