@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AbsenceSystemRes {
 
+	private String uuid;
+	
 	private String employeeCode;
 
 	private String name;
@@ -110,6 +112,14 @@ public class AbsenceSystemRes {
 
 	public void setAbsenceDate(LocalDate absenceDate) {
 		this.absenceDate = absenceDate;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 }

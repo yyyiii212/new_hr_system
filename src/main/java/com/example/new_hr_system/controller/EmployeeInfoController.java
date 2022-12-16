@@ -16,7 +16,7 @@ import com.example.new_hr_system.entity.EmployeeInfo;
 import com.example.new_hr_system.service.ifs.EmployeeInfoService;
 import com.example.new_hr_system.vo.EmployeeInfoReq;
 import com.example.new_hr_system.vo.EmployeeInfoRes;
-@CrossOrigin
+
 @RestController
 public class EmployeeInfoController {
 

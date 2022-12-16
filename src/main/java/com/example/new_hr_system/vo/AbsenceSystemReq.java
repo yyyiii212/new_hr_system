@@ -21,9 +21,9 @@ public class AbsenceSystemReq {
 	
 	private int yesOrNo;
 	
-	private int year;
+	private Integer year;
 	
-	private int month;
+	private Integer month;
 	
 	public AbsenceSystemReq() {
 		
@@ -85,22 +85,21 @@ public class AbsenceSystemReq {
 		this.email = email;
 	}
 
-	public int getYear() {
+	public Integer getYear() {
 		return year;
 	}
 
-	public void setYear(int year) {
+	public void setYear(Integer year) {
 		this.year = year;
 	}
 
-	public int getMonth() {
+	public Integer getMonth() {
 		return month;
 	}
 
-	public void setMonth(int month) {
+	public void setMonth(Integer month) {
 		this.month = month;
 	}
-
 	
 
 }
