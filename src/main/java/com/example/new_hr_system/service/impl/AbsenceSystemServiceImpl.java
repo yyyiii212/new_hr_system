@@ -257,7 +257,7 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 		if (attValue != null) {
 			String employeeCode = attValue.toString();
 			EmployeeInfo employeeInfo = employeeInfoDao.findById(employeeCode).get();
-			if (employeeInfo.getLevel() > 1) {
+			if (employeeInfo.getLevel() > 0) {
 				return true;
 			}
 			return false;
