@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.new_hr_system.entity.WorkSystem;
+import com.example.new_hr_system.respository.EmployeeInfoDao;
+import com.example.new_hr_system.respository.WorkSystemDao;
 import com.example.new_hr_system.service.ifs.WorkSystemService;
 import com.example.new_hr_system.vo.WorkSystemReq;
 import com.example.new_hr_system.vo.WorkSystemRes;
@@ -18,6 +20,10 @@ import com.example.new_hr_system.vo.WorkSystemRes;
 public class WorkSystemController {
 	@Autowired
 	private WorkSystemService workSystemService;
+	@Autowired
+	private EmployeeInfoDao employeeInfoDao;
+	@Autowired
+	private HttpSession httpSessions;
 
 	// ---登出時刪除綁定員工帳號
 	@PostMapping(value = "/api/httpSessionEmployeeCodeOut")

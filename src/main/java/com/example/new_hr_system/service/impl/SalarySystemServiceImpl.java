@@ -45,7 +45,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 			SalarySystem salarySystem = null;
 			return new SalarySystemRes(salarySystem, res.getMessage());
 		}
-		String checkYearAndMonth = "^[1-9]\\d{3}年(0[1-9]|1[0-2]|[1-9])月([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])日";
+		String checkYearAndMonth = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
 		boolean checkDate = req.getSalaryDate().matches(checkYearAndMonth);
 		if (!checkDate) {
 			res.setMessage("格式為yyyy年mm月dd日");
@@ -77,7 +77,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		// 避免新增到同一位員工 在同年同月有兩筆相同資料
 		List<SalarySystem> salarySystemList = salarySystemDao.findByEmployeeCode(req.getEmployeeCode());
 		// 轉日期的正規表達
-		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy年M月d日");
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-M-d");
 
 		// 將接近來的日期<字串>轉為日期
 		LocalDate salaryDate = LocalDate.parse(req.getSalaryDate(), format);
@@ -124,6 +124,10 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 			if (item.getWorkTime().getYear() == salaryDate.getYear()
 					&& item.getWorkTime().getMonthValue() == salaryDate.getMonthValue()) {
 				workHours += item.getAttendanceHours();
+				if (item.getAttendanceStatus() == null || item.getAttendanceStatus().length() == 0) {
+					salaryDeduct = salaryDeduct - 100;
+					continue;
+				}
 				if (item.getAttendanceStatus().contains("遲到")) {
 					salaryDeduct = salaryDeduct - 500;
 				}
@@ -205,7 +209,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		}
 
 		// 上面沒有擋掉代表一訂有輸入日期，故要規定日期的正規表達
-		String checkDateString = "^[1-9]\\d{3}年(0[1-9]|1[0-2]|[1-9])月([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])日";
+		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
 
 		// 判斷日期是否符合格式
 		boolean checkDate = req.getSalaryDate().matches(checkDateString);
@@ -215,7 +219,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		}
 
 		// 日期的正規表達
-		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy年M月d日");
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-M-d");
 
 		/// 將接近來的日期字串轉成日期
 		LocalDate salaryDate = LocalDate.parse(req.getSalaryDate(), format);
