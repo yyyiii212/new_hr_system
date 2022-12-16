@@ -7,7 +7,7 @@ import com.example.new_hr_system.vo.WorkSystemRes;
 
 public interface WorkSystemService {
 
-	// 取得按下登入時綁住EmployeeCode 
+	// 取得按下登入時綁住EmployeeCode   
 	public WorkSystemRes employeeCodeLogin(WorkSystemReq req);
 
 	// ---上班打卡 c
