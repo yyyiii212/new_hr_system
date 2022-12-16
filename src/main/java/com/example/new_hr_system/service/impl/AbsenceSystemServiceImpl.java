@@ -172,8 +172,9 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 					if (manager.getSection().equalsIgnoreCase(employeeItem.getSection())
 							&& manager.getLevel() > employeeItem.getLevel() && absenceItem.getYesOrNo() == 0) {
 
+						//¦h¥[uuid
 						AbsenceSystemRes res = new AbsenceSystemRes();
-						res.setUuid(absenceItem.getUuid().toString());
+						res.setUuid(absenceItem.getUuid());
 						res.setEmployeeCode(employeeItem.getEmployeeCode());
 						res.setName(employeeItem.getName());
 						res.setSection(employeeItem.getSection());
