@@ -19,4 +19,5 @@ public interface SalarySystemDao extends JpaRepository<SalarySystem, UUID> {
 
 	public List<SalarySystem> findByEmployeeCodeAndSalaryDateBetweenOrderBySalaryDateDesc(String employeeCode,
 			LocalDate startDate, LocalDate endDate);
+	public List<SalarySystem> findByOrderBySalaryDateDesc();
 }

@@ -14,6 +14,7 @@ import com.example.new_hr_system.service.ifs.SalarySystemService;
 import com.example.new_hr_system.vo.SalarySystemReq;
 import com.example.new_hr_system.vo.SalarySystemRes;
 import com.example.new_hr_system.vo.WorkSystemRes;
+
 //@CrossOrigin
 @RestController
 public class SalarySystemController {
@@ -43,9 +44,15 @@ public class SalarySystemController {
 	// -------------------------------------------------
 	@PostMapping(value = "/api/searchSalarySystemForManager") // 需要密碼
 	public SalarySystemRes searchSalarySystemForManager(@RequestBody SalarySystemReq req, HttpSession httpSession) {
-		httpSession.setAttribute("密碼", req.getPwd());
-		httpSession.setMaxInactiveInterval(3600);// 限時3600秒 = 一小時
+//		httpSession.setAttribute("密碼", req.getPwd());
+//		httpSession.setMaxInactiveInterval(3600);// 限時3600秒 = 一小時
 		return salarySystemService.searchSalarySystemForManager(req);
+	}
+	// -------------------------------------------------
+
+	@PostMapping(value = "/api/getSalarySystemInfoListForManager")
+	public SalarySystemRes getSalarySystemInfoListForManager(@RequestBody SalarySystemReq req) {
+		return salarySystemService.getSalarySystemInfoListForManager(req);
 	}
 
 }

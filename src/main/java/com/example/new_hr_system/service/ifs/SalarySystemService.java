@@ -16,4 +16,7 @@ public interface SalarySystemService {
 	// ---查詢薪水資料 r 給主管的
 	public SalarySystemRes searchSalarySystemForManager(SalarySystemReq req);
 
+	// ---查詢薪水資料 r 給主管的
+	public SalarySystemRes getSalarySystemInfoListForManager(SalarySystemReq req);
+
 }

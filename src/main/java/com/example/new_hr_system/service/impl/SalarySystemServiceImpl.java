@@ -277,9 +277,8 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		boolean checkSearchStartDate = StringUtils.hasText(req.getSearchStartDate());
 		boolean checkSearchEndDate = StringUtils.hasText(req.getSearchEndDate());
 
-		String checkDateString = "^[1-9]\\d{3}年(0[1-9]|1[0-2]|[1-9])月([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])日";
-
-		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy年M月d日");
+		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
+		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
 
 		if (!checkEmployeeCode || (!checkEmployeeCode && checkSearchStartDate && checkSearchEndDate)) {
 			res.setMessage("參數不能空");
@@ -360,6 +359,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		return res;
 	}
 
+	// =====搜尋資料 (給主管的)
 	@Override
 	public SalarySystemRes searchSalarySystemForManager(SalarySystemReq req) {
 		SalarySystemRes res = new SalarySystemRes();
@@ -367,13 +367,17 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		boolean checkSearchStartDate = StringUtils.hasText(req.getSearchStartDate());
 		boolean checkSearchEndDate = StringUtils.hasText(req.getSearchEndDate());
 
-		String checkDateString = "^[1-9]\\d{3}年(0[1-9]|1[0-2]|[1-9])月([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])日";
-
-		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy年M月d日");
+		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
+		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
 
 		if (!checkEmployeeCode && !checkSearchStartDate && !checkSearchEndDate) {
-			res.setMessage("參數不能空");
-			return new SalarySystemRes(res.getMessage());
+			List<SalarySystem> salarySystemListInfo = salarySystemDao.findByOrderBySalaryDateDesc();
+			if (salarySystemListInfo.isEmpty()) {
+				res.setMessage("查無資料");
+				return new SalarySystemRes(res.getMessage());
+			}
+			res.setSalarySystemList(salarySystemListInfo);
+			return res;
 		}
 
 		if (checkSearchEndDate && !checkSearchStartDate) {
@@ -474,6 +478,21 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		if (salarySystemListInfo.isEmpty()) {
 			res.setMessage("查無資料");
 			return new SalarySystemRes(res.getMessage());
+		}
+		res.setSalarySystemList(salarySystemListInfo);
+		return res;
+	}
+
+	@Override
+	public SalarySystemRes getSalarySystemInfoListForManager(SalarySystemReq req) {
+		SalarySystemRes res = new SalarySystemRes();
+		if (!StringUtils.hasText(req.getEmployeeCode())) {
+			return new SalarySystemRes("輸入員工編號");
+		}
+		List<SalarySystem> salarySystemListInfo = salarySystemDao
+				.findByEmployeeCodeOrderBySalaryDateDesc(req.getEmployeeCode());
+		if (salarySystemListInfo.isEmpty()) {
+			return new SalarySystemRes("查無資料");
 		}
 		res.setSalarySystemList(salarySystemListInfo);
 		return res;
