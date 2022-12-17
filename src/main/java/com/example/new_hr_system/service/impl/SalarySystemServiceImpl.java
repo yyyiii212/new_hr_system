@@ -22,7 +22,7 @@ import com.example.new_hr_system.service.ifs.SalarySystemService;
 import com.example.new_hr_system.vo.SalarySystemReq;
 import com.example.new_hr_system.vo.SalarySystemRes;
 import com.example.new_hr_system.vo.WorkSystemRes;
-
+ 
 @Service
 public class SalarySystemServiceImpl implements SalarySystemService {
 	@Autowired
