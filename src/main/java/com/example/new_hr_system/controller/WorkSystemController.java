@@ -16,6 +16,7 @@ import com.example.new_hr_system.vo.WorkSystemRes;
 //@CrossOrigin
 @RestController
 public class WorkSystemController {
+	//123
 	@Autowired
 	private WorkSystemService workSystemService;
 
