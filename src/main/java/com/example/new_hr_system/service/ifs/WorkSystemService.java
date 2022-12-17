@@ -7,9 +7,6 @@ import com.example.new_hr_system.vo.WorkSystemRes;
 
 public interface WorkSystemService {
 
-	// 取得按下登入時綁住EmployeeCode    
-	public WorkSystemRes employeeCodeLogin(WorkSystemReq req);
-
 	// ---上班打卡 c
 	public WorkSystemRes punchToWork(WorkSystemReq req);
 
@@ -20,7 +17,7 @@ public interface WorkSystemService {
 	public WorkSystemRes searchWorkInfoForStaff(WorkSystemReq req);
 
 	// ---搜尋上班狀況 r 給主管的
-	public WorkSystemRes searchWorkInfoForManager(WorkSystemReq req);
+	public WorkSystemRes searchWorkInfoForManager(WorkSystemReq req,HttpSession httpSession);
 
 	// ---刪除上班狀況 (時間區間)
 	public WorkSystemRes deleteWorkInfoByDateBetween(WorkSystemReq req);

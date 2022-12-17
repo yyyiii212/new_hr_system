@@ -7,6 +7,7 @@ public class WorkSystemReq {
 	private String searchEndDate;
 	private String password;
 	private String absenteeismDate;
+	private String managerEmployeeCode;
 	private int deleteYear;
 
 	public String getUuid() {
@@ -64,5 +65,14 @@ public class WorkSystemReq {
 	public void setAbsenteeismDate(String absenteeismDate) {
 		this.absenteeismDate = absenteeismDate;
 	}
+
+	public String getManagerEmployeeCode() {
+		return managerEmployeeCode;
+	}
+
+	public void setManagerEmployeeCode(String managerEmployeeCode) {
+		this.managerEmployeeCode = managerEmployeeCode;
+	}
+	
 
 }

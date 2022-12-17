@@ -14,11 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-//import com.example.new_hr_system.constants.HrSystemRtnCode;
-import com.example.new_hr_system.entity.AbsenceSystem;
 import com.example.new_hr_system.entity.EmployeeInfo;
-import com.example.new_hr_system.entity.SalarySystem;
-
 import com.example.new_hr_system.entity.WorkSystem;
 import com.example.new_hr_system.respository.AbsenceSystemDao;
 import com.example.new_hr_system.respository.EmployeeInfoDao;
@@ -41,6 +37,8 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 
 	@Autowired
 	private WorkSystemDao workSystemDao;
+	@Autowired
+	private HttpSession httpSession;
 
 	// -------------------------------------------------------------------------------
 
@@ -164,25 +162,23 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		boolean checkEmployeeCode = StringUtils.hasText(req.getEmployeeCode());// 有員工編號true
 		boolean checkSearchStartDate = StringUtils.hasText(req.getSearchStartDate());// 有開始日期true
 		boolean checkSearchEndDate = StringUtils.hasText(req.getSearchEndDate());// 有結束日期true
-//		String checkDateString = "^[1-9]\\d{3}年(0[1-9]|1[0-2]|[1-9])月([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])日";
-//		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy年M月d日");
 		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
 		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
-
 		// 員工只能搜索到自己的資料，故這邊要判斷
 		if (!checkEmployeeCode || (!checkEmployeeCode && !checkSearchStartDate && !checkSearchEndDate)) {
-			res.setMessage("參數或員工編號不能為空");
-			return new WorkSystemRes(res.getMessage());
+			return new WorkSystemRes("參數或員工編號不能為空");
 		}
 		// 有結束時間但沒有開始時間要防呆
 		if (!checkSearchStartDate && checkSearchEndDate) {
-			res.setMessage("輸入開始時間");
-			return new WorkSystemRes(res.getMessage());
+			return new WorkSystemRes("輸入開始時間");
 		}
 
 		// 沒有輸入開始時間一定會掉過來
 		if (!checkSearchStartDate) {
 			List<WorkSystem> workInfoList = workSystemDao.findByEmployeeCodeOrderByWorkTimeDesc(req.getEmployeeCode());
+			if (workInfoList.isEmpty()) {
+				return new WorkSystemRes("查無資料");
+			}
 			res.setWorkInfoList(workInfoList);
 			return res;
 		}
@@ -199,8 +195,7 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 			LocalDate startDate = LocalDate.parse(req.getSearchStartDate(), formatDate);
 			LocalDate endDate = LocalDate.parse(req.getSearchEndDate(), formatDate);
 			if (endDate.isBefore(startDate)) {
-				res.setMessage("結束時間不可小於開始時間");
-				return new WorkSystemRes(res.getMessage());
+				return new WorkSystemRes("結束時間不可小於開始時間");
 			}
 
 			// 因為worktime的格式是LocalDateTime 所以要將LocalDate轉型成LocalDateTime
@@ -210,8 +205,7 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 			List<WorkSystem> workInfoList = workSystemDao.findByEmployeeCodeAndWorkTimeBetweenOrderByWorkTimeDesc(
 					req.getEmployeeCode(), startDateTime, endDateTime);
 			if (workInfoList.isEmpty()) {
-				res.setMessage("查無資料");
-				return new WorkSystemRes(res.getMessage());
+				return new WorkSystemRes("查無資料");
 			}
 			res.setWorkInfoList(workInfoList);
 			return res;
@@ -244,25 +238,43 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 
 	// =====搜尋打卡資料(給主管的)
 	@Override
-	public WorkSystemRes searchWorkInfoForManager(WorkSystemReq req) {
+	public WorkSystemRes searchWorkInfoForManager(WorkSystemReq req, HttpSession httpSession) {
 		WorkSystemRes res = new WorkSystemRes();
+		if (!StringUtils.hasText(req.getManagerEmployeeCode())) {
+			return new WorkSystemRes("請輸入您的主管編號");
+		}
+		Optional<EmployeeInfo> employeeInfoManagerOp = employeeInfoDao.findById(req.getManagerEmployeeCode());// 1
+		if (!employeeInfoManagerOp.isPresent()) {
+			return new WorkSystemRes("請輸入您的正確編號");
+		}
+		EmployeeInfo employeeManagerInfo = employeeInfoManagerOp.get();// 2
+		List<WorkSystem> workInfoAllList = new ArrayList<>();// 3
+
 		boolean checkEmployeeCode = StringUtils.hasText(req.getEmployeeCode());// 有員工編號true
 		boolean checkSearchStartDate = StringUtils.hasText(req.getSearchStartDate());// 有開始日期true
 		boolean checkSearchEndDate = StringUtils.hasText(req.getSearchEndDate());// 有結束日期true
-//		String checkDateString = "^[1-9]\\d{3}年(0[1-9]|1[0-2]|[1-9])月([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])日";
-//		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy年M月d日");
 		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
 		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
-		// 三者都沒輸入的防呆
+		// 三者都沒輸入 回傳所有資訊給主管看
 		if ((!checkEmployeeCode && !checkSearchStartDate && !checkSearchEndDate)) {
 			List<WorkSystem> workInfoList = workSystemDao.findAllByOrderByWorkTimeDesc();
-			res.setWorkInfoList(workInfoList);
-			return res;
+			for (var item : workInfoList) {// 4
+				Optional<EmployeeInfo> employeeStaffOp = employeeInfoDao.findById(item.getEmployeeCode());// 5
+				EmployeeInfo employeeStaffInfo = employeeStaffOp.get();// 6
+				if (employeeStaffInfo.getSection().equals(employeeManagerInfo.getSection())) {// 7
+					workInfoAllList.add(item);// 8
+
+				}
+			}
+			if (workInfoAllList.isEmpty()) {
+				return new WorkSystemRes("該部門沒有資料，請確認該部門是否有該員工");
+			}
+			return new WorkSystemRes(workInfoAllList, " 部門 : " + employeeManagerInfo.getSection());
 		}
+
 		// 有結束日期，但沒有開始日期的防呆
 		if (checkSearchEndDate && !checkSearchStartDate) {
-			res.setMessage("輸入開始日期");
-			return new WorkSystemRes(res.getMessage());
+			return new WorkSystemRes("輸入開始日期");
 		}
 
 		// 有開始、結束日期的判斷，正規表達防呆
@@ -286,11 +298,20 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 			List<WorkSystem> workInfoListByEmployeeCode = workSystemDao
 					.findByEmployeeCodeOrderByWorkTimeDesc(req.getEmployeeCode());
 			if (workInfoListByEmployeeCode.isEmpty()) {
-				res.setMessage("查無資料");
-				return new WorkSystemRes(res.getMessage());
+				return new WorkSystemRes("查無資料");
 			}
-			res.setWorkInfoList(workInfoListByEmployeeCode);
-			return res;
+			for (var item : workInfoListByEmployeeCode) {// 4
+				Optional<EmployeeInfo> employeeStaffOp = employeeInfoDao.findById(item.getEmployeeCode());// 5
+				EmployeeInfo employeeStaffInfo = employeeStaffOp.get();// 6
+				if (employeeStaffInfo.getSection().equals(employeeManagerInfo.getSection())) {// 7
+					workInfoAllList.add(item);// 8
+
+				}
+			}
+			if (workInfoAllList.isEmpty()) {
+				return new WorkSystemRes("該部門沒有資料，請確認該部門是否有該員工");
+			}
+			return new WorkSystemRes(workInfoAllList, " 部門 : " + employeeManagerInfo.getSection());
 		}
 
 		// 三者都有輸入 員工編號、開始、結束日期
@@ -309,11 +330,21 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 					.findByEmployeeCodeAndWorkTimeBetweenOrderByWorkTimeDesc(req.getEmployeeCode(), startDateTime,
 							endDateTime);
 			if (workInfoListByEmployeeCodeAndDate.isEmpty()) {
-				res.setMessage("查無資料");
-				return new WorkSystemRes(res.getMessage());
+				return new WorkSystemRes("查無資料");
 			}
-			res.setWorkInfoList(workInfoListByEmployeeCodeAndDate);
-			return res;
+			for (var item : workInfoListByEmployeeCodeAndDate) {// 4
+				Optional<EmployeeInfo> employeeStaffOp = employeeInfoDao.findById(item.getEmployeeCode());// 5
+				EmployeeInfo employeeStaffInfo = employeeStaffOp.get();// 6
+				if (employeeStaffInfo.getSection().equals(employeeManagerInfo.getSection())) {// 7
+					workInfoAllList.add(item);// 8
+
+				}
+			}
+			if (workInfoAllList.isEmpty()) {
+				return new WorkSystemRes("該部門沒有資料，請確認該部門是否有該員工");
+			}
+
+			return new WorkSystemRes(workInfoAllList, " 部門 : " + employeeManagerInfo.getSection());
 
 		}
 		// 判斷只有員工編號、開始日期
@@ -335,8 +366,18 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 				res.setMessage("查無資料");
 				return new WorkSystemRes(res.getMessage());
 			}
-			res.setWorkInfoList(workInfoListByEmployeeCodeAndDate);
-			return res;
+			for (var item : workInfoListByEmployeeCodeAndDate) {// 4
+				Optional<EmployeeInfo> employeeStaffOp = employeeInfoDao.findById(item.getEmployeeCode());// 5
+				EmployeeInfo employeeStaffInfo = employeeStaffOp.get();// 6
+				if (employeeStaffInfo.getSection().equals(employeeManagerInfo.getSection())) {// 7
+					workInfoAllList.add(item);// 8
+
+				}
+			}
+			if (workInfoAllList.isEmpty()) {
+				return new WorkSystemRes("該部門沒有資料，請確認該部門是否有該員工");
+			}
+			return new WorkSystemRes(workInfoAllList, " 部門 : " + employeeManagerInfo.getSection());
 		}
 		// 上面都沒擋掉，代表一定沒有員工編號 (搜尋時間區間的所有員工)
 		if (checkSearchStartDate && checkSearchEndDate) {
@@ -353,11 +394,20 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 			List<WorkSystem> workInfoListByEmployeeCodeAndDate = workSystemDao
 					.findByWorkTimeBetweenOrderByWorkTimeDesc(startDateTime, endDateTime);
 			if (workInfoListByEmployeeCodeAndDate.isEmpty()) {
-				res.setMessage("查無資料");
-				return new WorkSystemRes(res.getMessage());
+				return new WorkSystemRes("查無資料");
 			}
-			res.setWorkInfoList(workInfoListByEmployeeCodeAndDate);
-			return res;
+			for (var item : workInfoListByEmployeeCodeAndDate) {// 4
+				Optional<EmployeeInfo> employeeStaffOp = employeeInfoDao.findById(item.getEmployeeCode());// 5
+				EmployeeInfo employeeStaffInfo = employeeStaffOp.get();// 6
+				if (employeeStaffInfo.getSection().equals(employeeManagerInfo.getSection())) {// 7
+					workInfoAllList.add(item);// 8
+
+				}
+			}
+			if (workInfoAllList.isEmpty()) {
+				return new WorkSystemRes("該部門沒有資料，請確認該部門是否有該員工");
+			}
+			return new WorkSystemRes(workInfoAllList, " 部門 : " + employeeManagerInfo.getSection());
 		}
 		// 上面都沒擋掉代表沒有員工編號、結束日期
 		// 只要轉開始日期即可
@@ -373,18 +423,26 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		List<WorkSystem> workInfoListByEmployeeCodeAndDate = workSystemDao
 				.findByWorkTimeBetweenOrderByWorkTimeDesc(startDateTime, endDateTimeNow);
 		if (workInfoListByEmployeeCodeAndDate.isEmpty()) {
-			res.setMessage("查無資料");
-			return new WorkSystemRes(res.getMessage());
+			return new WorkSystemRes("查無資料");
 		}
-		res.setWorkInfoList(workInfoListByEmployeeCodeAndDate);
-		return res;
+		for (var item : workInfoListByEmployeeCodeAndDate) {// 4
+			Optional<EmployeeInfo> employeeStaffOp = employeeInfoDao.findById(item.getEmployeeCode());// 5
+			EmployeeInfo employeeStaffInfo = employeeStaffOp.get();// 6
+			if (employeeStaffInfo.getSection().equals(employeeManagerInfo.getSection())) {// 7
+				workInfoAllList.add(item);// 8
+
+			}
+		}
+		if (workInfoAllList.isEmpty()) {
+			return new WorkSystemRes("該部門沒有資料，請確認該部門是否有該員工");
+		}
+		return new WorkSystemRes(workInfoAllList, " 部門 : " + employeeManagerInfo.getSection());
 
 	}
 
 	// =====刪除打卡資料(給主管的)=>刪除時間區間的資料
 	@Override
 	public WorkSystemRes deleteWorkInfoByDateBetween(WorkSystemReq req) {
-
 		WorkSystemRes res = new WorkSystemRes();
 		if (!StringUtils.hasText(req.getSearchStartDate()) || !StringUtils.hasText(req.getSearchEndDate())) {
 			res.setMessage("輸入開始與結束時間");
@@ -415,15 +473,24 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 	@Override
 	public WorkSystemRes creatAbsenteeismForManager(WorkSystemReq req) {
 		WorkSystemRes res = new WorkSystemRes();
-		if (!StringUtils.hasText(req.getEmployeeCode()) || !StringUtils.hasText(req.getAbsenteeismDate())) {
-			res.setMessage("參數值不能為空");
-			return new WorkSystemRes(res.getMessage());
+		if (!StringUtils.hasText(req.getEmployeeCode()) || !StringUtils.hasText(req.getAbsenteeismDate())
+				|| !StringUtils.hasText(req.getManagerEmployeeCode())) {
+			return new WorkSystemRes("參數值不能為空");
+		}
+		Optional<EmployeeInfo> employeeStaffOp = employeeInfoDao.findById(req.getEmployeeCode());// 5
+		Optional<EmployeeInfo> employeeManagerOp = employeeInfoDao.findById(req.getManagerEmployeeCode());// 5
+		if (!employeeStaffOp.isPresent() || !employeeManagerOp.isPresent()) {
+			return new WorkSystemRes("請輸入正確編號");
+		}
+		EmployeeInfo employeeStaffInfo = employeeStaffOp.get();// 6
+		EmployeeInfo employeeManagerInfo = employeeManagerOp.get();// 6
+
+		if (!employeeStaffInfo.getSection().equals(employeeManagerInfo.getSection())) {
+			return new WorkSystemRes("您與該員工不同部門");
 		}
 		// 日期ㄉ正規表達
 		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
 		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
-//		String checkDateString = "^[1-9]\\d{3}年(0[1-9]|1[0-2]|[1-9])月([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])日";
-//		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy年M月d日");
 		if (!req.getAbsenteeismDate().matches(checkDateString)) {
 			res.setMessage("日期格式錯誤 請輸入(yyyy年mm月dd日)");
 			return new WorkSystemRes(res.getMessage());
@@ -453,22 +520,20 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 
 	}
 
-	// =====刪除曠職資料(給主管的)
+	// =====刪除曠職資料
 	@Override
 	public WorkSystemRes deleteAbsenteeismForManager(WorkSystemReq req) {
 		UUID uuid = UUID.fromString(req.getUuid());
 		WorkSystemRes res = new WorkSystemRes();
 		if (!StringUtils.hasText(req.getUuid())) {
 			res.setMessage("參數值不能空");
-			WorkSystem workSystem = null;
-			return new WorkSystemRes(workSystem, res.getMessage());
+			return new WorkSystemRes(res.getMessage());
 		}
 		// 請求亂碼uuid ， 因為上班時打過卡了，固會產生(前端顯示時，藉由"按鈕"取得亂碼)
 		Optional<WorkSystem> workSystemOp = workSystemDao.findById(uuid);
 		// 其實這裡的防呆沒啥意義，因為前端會顯示的資料 ，資料庫一定有該uuid
 		if (!workSystemOp.isPresent()) {
-			res.setMessage("參數值錯誤");
-			return new WorkSystemRes(res.getMessage());
+			return new WorkSystemRes("參數值錯誤");
 		}
 		WorkSystem workSystem = workSystemOp.get();
 		// 確認是主管不小心記<曠職>才能刪除，以防刪除到員工有來上班的紀錄
@@ -477,63 +542,45 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 			res.setMessage("刪除曠職成功");
 			return new WorkSystemRes(res.getMessage());
 		}
-		res.setMessage("這位員工這天沒有曠職");
-		return new WorkSystemRes(res.getMessage());
+		return new WorkSystemRes("這位員工這天沒有曠職");
 	}
 
-	// =====印出該員工打卡資料
+	// =====印出該員工打卡資料(前端給打卡下班用)
 	@Override
 	public WorkSystemRes getWorkInfoListToday(WorkSystemReq req) {
 		WorkSystemRes res = new WorkSystemRes();
-//		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy年M月d日");
 		if (!StringUtils.hasText(req.getEmployeeCode())) {
-			res.setMessage("參數值不能為空");
-			return new WorkSystemRes(res.getMessage());
+			return new WorkSystemRes("參數值不能為空");
 		}
-//		if (StringUtils.hasText(req.getAbsenteeismDate())) {
-//			DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
-//			LocalDate absenteeismDate = LocalDate.parse(req.getAbsenteeismDate(), formatDate);
-//			LocalDateTime absenteeismDateTime = absenteeismDate.atStartOfDay();
-//			List<WorkSystem> workInfoList = workSystemDao
-//					.findByEmployeeCodeAndWorkTimeGreaterThanEqual(req.getEmployeeCode(), absenteeismDateTime);
-//			if (workInfoList.isEmpty()) {
-//				return new WorkSystemRes("查無資料");
-//			}
-//			res.setWorkInfoList(workInfoList);
-//			return res;
-//		}
 		LocalDate nowDate = LocalDate.now();
 		LocalDateTime nowDateTime = nowDate.atStartOfDay();
 		List<WorkSystem> workInfoList = workSystemDao
 				.findByEmployeeCodeAndWorkTimeGreaterThanEqual(req.getEmployeeCode(), nowDateTime);
+		if (workInfoList.isEmpty()) {
+			return new WorkSystemRes("你是不是上班沒打卡!?");
+		}
 		res.setWorkInfoList(workInfoList);
 		return res;
 	}
 
-	@Override
-	public WorkSystemRes employeeCodeLogin(WorkSystemReq req) {
-		WorkSystemRes res = new WorkSystemRes();
-		if (!StringUtils.hasText(req.getEmployeeCode())) {
-			res.setMessage("參數值不能為空");
-			return new WorkSystemRes(res.getMessage());
-		}
-		Optional<EmployeeInfo> employeeInfoOp = employeeInfoDao.findById(req.getEmployeeCode());
-		if (!employeeInfoOp.isPresent()) {
-			return null;
-		}
-		EmployeeInfo employeeInfo = employeeInfoOp.get();
-		res.setMessage("登入成功");
-		return new WorkSystemRes(employeeInfo, res.getMessage());
-	}
-
+	// ===刪除曠職前，列出資訊，藉由按鈕取到uuid 
 	@Override
 	public WorkSystemRes getWorkInfoListAbsenteeism(WorkSystemReq req) {
-		WorkSystemRes res = new WorkSystemRes();
 		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
 		LocalDate absenteeismDate = LocalDate.parse(req.getAbsenteeismDate(), formatDate);
-		if (!StringUtils.hasText(req.getAbsenteeismDate()) || !StringUtils.hasText(req.getEmployeeCode())) {
-			res.setMessage("參數值或日期不能為空");
-			return new WorkSystemRes(res.getMessage());
+		if (!StringUtils.hasText(req.getAbsenteeismDate()) || !StringUtils.hasText(req.getEmployeeCode())
+				|| !StringUtils.hasText(req.getManagerEmployeeCode())) {
+			return new WorkSystemRes("參數值或日期不能為空");
+		}
+		Optional<EmployeeInfo> employeeStaffOp = employeeInfoDao.findById(req.getManagerEmployeeCode());// 5
+		Optional<EmployeeInfo> employeeManagerOp = employeeInfoDao.findById(req.getEmployeeCode());// 5
+		if (!employeeStaffOp.isPresent() || !employeeManagerOp.isPresent()) {
+			return new WorkSystemRes("請輸入正確編號");
+		}
+		EmployeeInfo employeeStaffInfo = employeeStaffOp.get();// 6
+		EmployeeInfo employeeManagerInfo = employeeManagerOp.get();// 6
+		if (!employeeStaffInfo.getSection().equals(employeeManagerInfo.getSection())) {
+			return new WorkSystemRes("您與該員工不同部門");
 		}
 		LocalDateTime absenteeismDateTime = absenteeismDate.atStartOfDay();
 		List<WorkSystem> workInfoList = workSystemDao.findByEmployeeCodeAndWorkTime(req.getEmployeeCode(),
@@ -541,8 +588,7 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		if (workInfoList.isEmpty()) {
 			return new WorkSystemRes("查無資料");
 		}
-		res.setWorkInfoList(workInfoList);
-		return res;
+		return new WorkSystemRes(workInfoList, " 部門 : " + employeeManagerInfo.getSection());
 	}
 
 }

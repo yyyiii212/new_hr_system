@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.new_hr_system.entity.EmployeeInfo;
 
 @Repository
-public interface EmployeeInfoDao extends JpaRepository<EmployeeInfo, String>{
+public interface EmployeeInfoDao extends JpaRepository<EmployeeInfo, String> {
 
 }
