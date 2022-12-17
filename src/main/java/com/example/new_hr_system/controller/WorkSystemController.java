@@ -16,7 +16,7 @@ import com.example.new_hr_system.vo.WorkSystemRes;
 //@CrossOrigin
 @RestController
 public class WorkSystemController {
-	//123
+	
 	@Autowired
 	private WorkSystemService workSystemService;
 
@@ -38,11 +38,11 @@ public class WorkSystemController {
 	// ---打卡上班
 	@PostMapping(value = "/api/punchToWork")
 	public WorkSystemRes punchToWork(@RequestBody WorkSystemReq req, HttpSession httpSession) {
-		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-		if (!employeeCodeString.equals(req.getEmployeeCode()) || employeeCode == null) {
-			return new WorkSystemRes("請輸入自己的員工編號HttpSession");
-		}
+//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
+//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
+//		if (!employeeCodeString.equals(req.getEmployeeCode()) || employeeCode == null) {
+//			return new WorkSystemRes("請輸入自己的員工編號HttpSession");
+//		}
 
 		return workSystemService.punchToWork(req);
 	}

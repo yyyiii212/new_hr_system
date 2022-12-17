@@ -1,8 +1,10 @@
 package com.example.new_hr_system.config;
 
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+@Configuration
 public class WebMvcConfig implements WebMvcConfigurer{
 	//宗憲加
 	//用來連接前端與後端(暫存httpsession)所用方法

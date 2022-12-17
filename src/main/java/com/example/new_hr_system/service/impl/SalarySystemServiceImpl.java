@@ -71,7 +71,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		}
 		Optional<EmployeeInfo> managerEmployeeInfoOp = employeeInfoDao.findById(req.getSalaryEmployeeCode());
 		if(!managerEmployeeInfoOp.isPresent()) {
-			return new SalarySystemRes("找不到該員工");
+			return new SalarySystemRes("請檢察您的編號");
 		}
 		EmployeeInfo managerEmployeeInfo = managerEmployeeInfoOp.get();
 		if(!managerEmployeeInfo.getSection().equals("人資")) {
@@ -176,11 +176,11 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		UUID uuid = UUID.fromString(req.getUuid());
 		SalarySystemRes res = new SalarySystemRes();
 		if(!StringUtils.hasText(req.getSalaryEmployeeCode())) {
-			return new SalarySystemRes("請輸入員工編號");
+			return new SalarySystemRes("請輸入主管編號");
 		}
 		Optional<EmployeeInfo> managerEmployeeInfoOp = employeeInfoDao.findById(req.getSalaryEmployeeCode());
 		if(!managerEmployeeInfoOp.isPresent()) {
-			return new SalarySystemRes("找不到該員工");
+			return new SalarySystemRes("請檢察主管編號");
 		}
 		EmployeeInfo managerEmployeeInfo = managerEmployeeInfoOp.get();
 		if(!managerEmployeeInfo.getSection().equals("人資")) {
