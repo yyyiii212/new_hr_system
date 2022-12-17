@@ -6,6 +6,7 @@ import java.util.UUID;
 public class SalarySystemReq {
 	private String uuid;
 	private String employeeCode;
+	private String salaryEmployeeCode;
 	private String salaryDate;
 	private Integer salary;
 	private String name;
@@ -76,5 +77,14 @@ public class SalarySystemReq {
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
 	}
+
+	public String getSalaryEmployeeCode() {
+		return salaryEmployeeCode;
+	}
+
+	public void setSalaryEmployeeCode(String salaryEmployeeCode) {
+		this.salaryEmployeeCode = salaryEmployeeCode;
+	}
+	
 
 }
