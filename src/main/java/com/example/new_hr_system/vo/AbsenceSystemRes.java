@@ -2,6 +2,7 @@ package com.example.new_hr_system.vo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.example.new_hr_system.entity.AbsenceSystem;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -9,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AbsenceSystemRes {
 
+	private UUID uuid;
+	
 	private String employeeCode;
 
 	private String name;
@@ -111,5 +114,15 @@ public class AbsenceSystemRes {
 	public void setAbsenceDate(LocalDate absenceDate) {
 		this.absenceDate = absenceDate;
 	}
+
+	public UUID getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
+	}
+
+	
 
 }

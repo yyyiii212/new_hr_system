@@ -96,7 +96,7 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 	@Override
 	public AbsenceSystemResList getAbsenceByEmployeeCode(HttpSession httpSession) {
 
-		Object attValue = httpSession.getAttribute("employeeCode");
+		Object attValue = httpSession.getAttribute("employee_code");
 
 		if (attValue != null) {
 			String employeeCode = attValue.toString();
@@ -112,10 +112,10 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 	@Override
 	public AbsenceSystemResList getAbsenceByEmployeeCodeAndDate(AbsenceSystemReq req, HttpSession httpSession) {
 
-		if (!StringUtils.hasText(req.getAbsenceDate().toString())) {
+		if (req.getYear() == null || req.getMonth() == null) {
 			return new AbsenceSystemResList(AbsenceSystemRtnCode.DATE_EMPTY.getMessage());
 		}
-		Object attValue = httpSession.getAttribute("employeeCode");
+		Object attValue = httpSession.getAttribute("employee_code");
 
 		if (attValue != null) {
 			String employeeCode = attValue.toString();
@@ -146,7 +146,7 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 	@Override
 	public AbsenceSystemResList getAbsenceBySectionAndLevel(HttpSession httpSession) {
 
-		Object attValue = httpSession.getAttribute("employeeCode");
+		Object attValue = httpSession.getAttribute("employee_code");
 
 		if (!StringUtils.hasText(attValue.toString())) {
 			return new AbsenceSystemResList(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
@@ -172,7 +172,9 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 					if (manager.getSection().equalsIgnoreCase(employeeItem.getSection())
 							&& manager.getLevel() > employeeItem.getLevel() && absenceItem.getYesOrNo() == 0) {
 
+						//¦h¥[uuid
 						AbsenceSystemRes res = new AbsenceSystemRes();
+						res.setUuid(absenceItem.getUuid());
 						res.setEmployeeCode(employeeItem.getEmployeeCode());
 						res.setName(employeeItem.getName());
 						res.setSection(employeeItem.getSection());
@@ -251,7 +253,7 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 	@Override
 	public boolean checkEmployeeLevel(HttpSession httpSession) {
 
-		Object attValue = httpSession.getAttribute("employeeCode");
+		Object attValue = httpSession.getAttribute("employee_code");
 
 		if (attValue != null) {
 			String employeeCode = attValue.toString();

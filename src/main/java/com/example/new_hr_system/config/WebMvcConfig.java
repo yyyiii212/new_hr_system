@@ -1,4 +1,4 @@
-package com.example.new_hr_system.Config;
+package com.example.new_hr_system.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

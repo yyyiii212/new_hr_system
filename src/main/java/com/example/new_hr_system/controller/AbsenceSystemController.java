@@ -3,7 +3,6 @@ package com.example.new_hr_system.controller;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +12,7 @@ import com.example.new_hr_system.vo.AbsenceSystemReq;
 import com.example.new_hr_system.vo.AbsenceSystemRes;
 import com.example.new_hr_system.vo.AbsenceSystemResList;
 
-//@CrossOrigin
+
 @RestController
 public class AbsenceSystemController {
 	
@@ -43,6 +42,14 @@ public class AbsenceSystemController {
 		return absenceSystemService.getAbsenceByEmployeeCode(httpSession);
 		
 	}
+	
+	//員工輸入年月查詢自己的假單
+		@PostMapping(value = "/api/getAbsenceByEmployeeCodeAndDate")
+		public AbsenceSystemResList getAbsenceByEmployeeCodeAndDate(@RequestBody AbsenceSystemReq req,HttpSession httpSession) {
+			
+			return absenceSystemService.getAbsenceByEmployeeCodeAndDate(req, httpSession);
+			
+		}
 	
 	//主管顯示同部門員工的假單
 	@PostMapping(value = "/api/getAbsenceBySectionAndLevel")
