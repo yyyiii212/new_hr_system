@@ -3,15 +3,20 @@ package com.example.new_hr_system.vo;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class SalarySystemReq {
 	private String uuid;
 	private String employeeCode;
 	private String salaryEmployeeCode;
-	private String salaryDate;
+	@JsonFormat(shape=JsonFormat.Shape.STRING,pattern="yyyy-MM-dd")
+	private LocalDate salaryDate;
 	private Integer salary;
 	private String name;
-	private String searchStartDate;
-	private String searchEndDate;
+	@JsonFormat(shape=JsonFormat.Shape.STRING,pattern="yyyy-MM-dd")
+	private LocalDate searchStartDate;
+	@JsonFormat(shape=JsonFormat.Shape.STRING,pattern="yyyy-MM-dd")
+	private LocalDate searchEndDate;
 	private String pwd;
 
 	public String getUuid() {
@@ -30,11 +35,11 @@ public class SalarySystemReq {
 		this.employeeCode = employeeCode;
 	}
 
-	public String getSalaryDate() {
+	public LocalDate getSalaryDate() {
 		return salaryDate;
 	}
 
-	public void setSalaryDate(String salaryDate) {
+	public void setSalaryDate(LocalDate salaryDate) {
 		this.salaryDate = salaryDate;
 	}
 
@@ -54,19 +59,19 @@ public class SalarySystemReq {
 		this.name = name;
 	}
 
-	public String getSearchStartDate() {
+	public LocalDate getSearchStartDate() {
 		return searchStartDate;
 	}
 
-	public void setSearchStartDate(String startDate) {
+	public void setSearchStartDate(LocalDate startDate) {
 		this.searchStartDate = startDate;
 	}
 
-	public String getSearchEndDate() {
+	public LocalDate getSearchEndDate() {
 		return searchEndDate;
 	}
 
-	public void setSearchEndDate(String endDate) {
+	public void setSearchEndDate(LocalDate endDate) {
 		this.searchEndDate = endDate;
 	}
 

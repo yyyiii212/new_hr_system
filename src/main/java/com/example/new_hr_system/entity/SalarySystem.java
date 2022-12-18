@@ -8,8 +8,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
 @Table(name = "salary_system")
@@ -25,7 +28,8 @@ public class SalarySystem {
 
 	@Column(name = "name")
 	private String name;
-
+	
+	
 	@Column(name = "salary_date")
 	private LocalDate salaryDate; // Á~¸ê¦~¤ë
 
@@ -91,7 +95,7 @@ public class SalarySystem {
 	}
 
 	public void setSalaryDate(LocalDate salaryDate) {
-		
+		this.salaryDate = salaryDate;
 	}
 
 	public int getSalary() {
