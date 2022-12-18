@@ -14,6 +14,10 @@ public interface AbsenceSystemDao extends JpaRepository<AbsenceSystem, UUID> {
 	public List<AbsenceSystem> findByEmployeeCode(String employeeCode);
 	
 	public List<AbsenceSystem> findAllByEmployeeCode(String employeeCode);
+	
+	public List<AbsenceSystem> findByEmployeeCodeOrderByAbsenceDateDesc(String employeeCode);
+	
+	public List<AbsenceSystem> findAllByOrderByAbsenceDateDesc();
 
 
 }

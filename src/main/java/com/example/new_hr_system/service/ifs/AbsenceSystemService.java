@@ -35,5 +35,7 @@ public interface AbsenceSystemService {
 	
 	//判斷員工階級(小於2不能點)
 	public boolean checkEmployeeLevel(HttpSession httpSession);
+	
+	public AbsenceSystemRes updateAbsence(AbsenceSystemReq req);
 
 }
