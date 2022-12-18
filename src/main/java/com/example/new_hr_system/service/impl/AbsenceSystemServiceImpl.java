@@ -70,7 +70,8 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 		gmail.setFrom("kennymax22581997@gmail.com");
 		gmail.setTo(req.getEmail());
 		gmail.setSubject("主旨：柬埔寨旅遊團員工假單批准");
-		gmail.setText("員工: " + employeeInfo.getEmployeeCode() + " " + employeeInfo.getName() + " 有假單需要批准");
+		gmail.setText("員工: " + employeeInfo.getEmployeeCode() + " " + employeeInfo.getName() + " 有假單需要批准" +
+		"   請假日期: "+ req.getAbsenceDate() + "   事由: " + req.getAbsenceStr() );
 		mailSender.send(gmail);
 
 		return new AbsenceSystemRes(AbsenceSystemRtnCode.SUCCESSFUL.getMessage());
@@ -100,7 +101,7 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 
 		if (attValue != null) {
 			String employeeCode = attValue.toString();
-			List<AbsenceSystem> absenceList = absenceSystemDao.findAllByEmployeeCode(employeeCode);
+			List<AbsenceSystem> absenceList = absenceSystemDao.findByEmployeeCodeOrderByAbsenceDateDesc(employeeCode);
 			AbsenceSystemResList res = new AbsenceSystemResList();
 			res.setAbsenceSystemList(absenceList);
 			return res;
@@ -119,7 +120,7 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 
 		if (attValue != null) {
 			String employeeCode = attValue.toString();
-			List<AbsenceSystem> absenceList = absenceSystemDao.findAllByEmployeeCode(employeeCode);
+			List<AbsenceSystem> absenceList = absenceSystemDao.findByEmployeeCodeOrderByAbsenceDateDesc(employeeCode);
 			List<AbsenceSystem> chosenList = new ArrayList<>();
 
 			for (AbsenceSystem item : absenceList) {
@@ -139,7 +140,6 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 			return res;
 		}
 		return new AbsenceSystemResList(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
-
 	}
 
 	// 依照主管等級和所屬部門顯示假單
@@ -158,7 +158,7 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 		List<EmployeeInfo> employeeList = employeeInfoDao.findAll();
 
 		// 所有假單
-		List<AbsenceSystem> absenceList = absenceSystemDao.findAll();
+		List<AbsenceSystem> absenceList = absenceSystemDao.findAllByOrderByAbsenceDateDesc();
 
 		// 要顯示的假單
 		List<AbsenceSystemRes> absenceResList = new ArrayList<>();
@@ -265,6 +265,26 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 		}
 
 		return false;
+	}
+
+	//更新請假表單
+	@Override
+	public AbsenceSystemRes updateAbsence(AbsenceSystemReq req) {
+		if(!StringUtils.hasText(req.getUuid())) {
+			return new AbsenceSystemRes(AbsenceSystemRtnCode.UUID_EMPTY.getMessage());
+		}
+		UUID uuid = UUID.fromString(req.getUuid());
+		 AbsenceSystem absence = absenceSystemDao.findById(uuid).get();
+		 
+		 if (StringUtils.hasText(req.getAbsenceReason())) {
+			 absence.setAbsenceReason(req.getAbsenceReason());;
+			}
+			if (req.getAbsenceDate() != null) {
+				absence.setAbsenceDate(req.getAbsenceDate());;
+			}
+			absenceSystemDao.save(absence);
+		
+		return new AbsenceSystemRes(absence,AbsenceSystemRtnCode.SUCCESSFUL.getMessage());
 	}
 
 }

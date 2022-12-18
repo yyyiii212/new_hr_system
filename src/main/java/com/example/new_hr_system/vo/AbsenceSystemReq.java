@@ -25,6 +25,8 @@ public class AbsenceSystemReq {
 	
 	private Integer month;
 	
+	private String absenceStr;
+	
 	public AbsenceSystemReq() {
 		
 	}
@@ -99,6 +101,14 @@ public class AbsenceSystemReq {
 
 	public void setMonth(Integer month) {
 		this.month = month;
+	}
+
+	public String getAbsenceStr() {
+		return absenceStr;
+	}
+
+	public void setAbsenceStr(String absenceStr) {
+		this.absenceStr = absenceStr;
 	}
 	
 

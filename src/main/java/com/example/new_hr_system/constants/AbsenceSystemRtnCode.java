@@ -9,6 +9,7 @@ public enum AbsenceSystemRtnCode {
 	ABSENCE_ACCEPT("200", "批准請假,完成"),
 	ABSENCE_REJECT("200", "拒絕請假,完成"),
 	DATA_REQOIRED("417", "請填寫完整資料"),
+	UUID_EMPTY("417", "UUID為空"),
 	EMPLOYEE_CODE_REQOIRED("417", "員工編號為空,或錯誤"),
 	ABSENCE_REASON_REQOIRED("417", "假別為空,或錯誤"),
 	DATE_EMPTY("400", "輸入日期為空"),
