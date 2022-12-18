@@ -13,7 +13,7 @@ import com.example.new_hr_system.service.ifs.WorkSystemService;
 import com.example.new_hr_system.vo.WorkSystemReq;
 import com.example.new_hr_system.vo.WorkSystemRes;
 
-//@CrossOrigin
+//@CrossOrigin 
 @RestController
 public class WorkSystemController {
 
