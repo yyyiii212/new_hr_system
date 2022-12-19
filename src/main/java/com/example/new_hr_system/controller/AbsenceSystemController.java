@@ -21,9 +21,9 @@ public class AbsenceSystemController {
 
 	// 員工新增假單
 	@PostMapping(value = "/api/addAbsence")
-	public AbsenceSystemRes addAbsence(@RequestBody AbsenceSystemReq req) {
+	public AbsenceSystemRes addAbsence(@RequestBody AbsenceSystemReq req, HttpSession httpSession) {
 
-		return absenceSystemService.addAbsence(req);
+		return absenceSystemService.addAbsence(req, httpSession);
 
 	}
 

@@ -22,17 +22,17 @@ public class AbsenceTest {
 	@Autowired
 	private AbsenceSystemService absenceSystemService;
 	
-	@Test
-	public void addAbsenceTest() {
-		AbsenceSystemReq req = new AbsenceSystemReq();
-		LocalDate date = LocalDate.parse("2023-01-01");
-		req.setEmployeeCode("A02");
-		req.setAbsenceReason("¤½°²");
-		req.setAbsenceDate(date);
-		req.setEmail("kennymax22581997@gmail.com");
-		absenceSystemService.addAbsence(req);
-		
-	}
+//	@Test
+//	public void addAbsenceTest() {
+//		AbsenceSystemReq req = new AbsenceSystemReq();
+//		LocalDate date = LocalDate.parse("2023-01-01");
+//		req.setEmployeeCode("A02");
+//		req.setAbsenceReason("¤½°²");
+//		req.setAbsenceDate(date);
+//		req.setEmail("kennymax22581997@gmail.com");
+//		absenceSystemService.addAbsence(req);
+//		
+//	}
 	
 	@Test
 	public void deleteAbsenceTest() {

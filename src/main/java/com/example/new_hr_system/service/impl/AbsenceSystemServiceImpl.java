@@ -44,26 +44,30 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 
 	// 創建請假表單,並寄送email提醒主管批准
 	@Override
-	public AbsenceSystemRes addAbsence(AbsenceSystemReq req) {
+	public AbsenceSystemRes addAbsence(AbsenceSystemReq req, HttpSession httpSession) {
 
 		if (!StringUtils.hasText(req.getAbsenceReason())) {
 			return new AbsenceSystemRes(AbsenceSystemRtnCode.ABSENCE_REASON_REQOIRED.getMessage());
-		} else if (!StringUtils.hasText(req.getEmployeeCode())) {
+		} 
+		Object attValue = httpSession.getAttribute("employee_code");
+		if (attValue == null) {
 			return new AbsenceSystemRes(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
 		}
 
-		EmployeeInfo employee = employeeInfoDao.findById(req.getEmployeeCode()).get();
+		String employeeCode = attValue.toString();
+		
+		EmployeeInfo employee = employeeInfoDao.findById(employeeCode).get();
 
-		if (!employee.getEmployeeCode().equalsIgnoreCase(req.getEmployeeCode())) {
+		if (!employee.getEmployeeCode().equalsIgnoreCase(employeeCode)) {
 			return new AbsenceSystemRes(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
 		}
 
-		AbsenceSystem absence = new AbsenceSystem(UUID.randomUUID(), req.getEmployeeCode(), req.getAbsenceReason(),
+		AbsenceSystem absence = new AbsenceSystem(UUID.randomUUID(), employeeCode, req.getAbsenceReason(),
 				req.getAbsenceDate());
 
 		absenceSystemDao.save(absence);
 
-		EmployeeInfo employeeInfo = employeeInfoDao.findById(req.getEmployeeCode()).get();
+		EmployeeInfo employeeInfo = employeeInfoDao.findById(employeeCode).get();
 
 		SimpleMailMessage gmail = new SimpleMailMessage();
 

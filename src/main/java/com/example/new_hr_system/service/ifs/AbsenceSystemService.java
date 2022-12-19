@@ -11,7 +11,7 @@ public interface AbsenceSystemService {
 	//員工新增假單 
 	//輸入:員編,假別,日期(Date), email  輸出:假單(uuid,員編,假別,日期(Date)), 成功訊息, email
 	//功能:員工新增假單,按下新增鍵後創建假單並寄送email通知主管批假
-	public AbsenceSystemRes addAbsence(AbsenceSystemReq req);
+	public AbsenceSystemRes addAbsence(AbsenceSystemReq req, HttpSession httpSession);
 	
 	//刪除假單
 	//輸入:uuid  輸出:成功訊息
