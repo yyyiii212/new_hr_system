@@ -137,12 +137,7 @@ public class WorkSystemController {
 
 	/*--------------------(主管)員工沒打卡下班找主管補打卡*/
 	@PostMapping(value = "/api/updeateWorkOffTimeForManager")
-	public WorkSystemRes updeateWorkOffTimeForManager(@RequestBody WorkSystemReq req, HttpSession httpSession) {
-		Object employeeCode = httpSession.getAttribute("employee_code");
-		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
-		if (employeeCode == null || (!employeeCodeString.equals(req.getManagerEmployeeCode()))) {
-			return new WorkSystemRes("請輸入自己的主管編號或者嘗試重新登入");
-		}
+	public WorkSystemRes updeateWorkOffTimeForManager(@RequestBody WorkSystemReq req) {
 		return workSystemService.updeateWorkOffTimeForManager(req);
 	}
 
