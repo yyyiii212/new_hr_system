@@ -33,15 +33,15 @@ public class EmployeeInfoServiceImpl implements EmployeeInfoService {
 
 	@Autowired
 	private WorkSystemDao workSystemDao;
-	
+
 	@Override
 	public EmployeeInfo loginJudgment(EmployeeInfoReq req) {
-		
+
 		Optional<EmployeeInfo> employeeInfoOp = employeeInfoDao.findById(req.getEmployeeCode());
-		
-		if(employeeInfoOp.isPresent()) {
+
+		if (employeeInfoOp.isPresent()) {
 			EmployeeInfo employeeInfo = employeeInfoOp.get();
-			if(employeeInfo.getId().equals(req.getId())) {
+			if (employeeInfo.getId().equals(req.getId())) {
 				return employeeInfo;
 			}
 		}
@@ -50,28 +50,49 @@ public class EmployeeInfoServiceImpl implements EmployeeInfoService {
 
 	@Override
 	public EmployeeInfo createEmployeeInfo(EmployeeInfoReq req) {
-
-		// 找DB有無重複的資料
-		Optional<EmployeeInfo> employeeInfoOp = employeeInfoDao.findById(req.getEmployeeCode());
-		// 資料有重複就回傳null
-		if (employeeInfoOp.isPresent()) {
-			return null;
+		// 判斷部門
+		if (req.getSection().equals("人資")) {
+			EmployeeInfo employeeInfo = new EmployeeInfo();
+			employeeInfo.setEmployeeCode("A" + req.getEmployeeCode());
+			// 找DB有無重複的資料
+			Optional<EmployeeInfo> employeeInfoOp = employeeInfoDao.findById(employeeInfo.getEmployeeCode());
+			// 資料有重複就回傳null
+			if (employeeInfoOp.isPresent()) {
+				return null;
+			}
 		}
+		if (req.getSection().equals("會計")) {
+			EmployeeInfo employeeInfo = new EmployeeInfo();
+			employeeInfo.setEmployeeCode("B" + req.getEmployeeCode());
+			// 找DB有無重複的資料
+			Optional<EmployeeInfo> employeeInfoOp = employeeInfoDao.findById(employeeInfo.getEmployeeCode());
+			// 資料有重複就回傳null
+			if (employeeInfoOp.isPresent()) {
+				return null;
+			}
+		}
+		if (req.getSection().equals("敲詐")) {
+			EmployeeInfo employeeInfo = new EmployeeInfo();
+			employeeInfo.setEmployeeCode("C" + req.getEmployeeCode());
+			// 找DB有無重複的資料
+			Optional<EmployeeInfo> employeeInfoOp = employeeInfoDao.findById(employeeInfo.getEmployeeCode());
+			// 資料有重複就回傳null
+			if (employeeInfoOp.isPresent()) {
+				return null;
+			}
+		}
+
 		// 新增資料
 		EmployeeInfo employeeInfo = new EmployeeInfo(req.getName(), req.getId(), req.getEmployeeEmail(),
 				req.getSection(), req.getSituation());
 		employeeInfo.setJoinTime(new Date());
-		// 判斷部門
-		if (req.getSection().equals("人資")) {
-			employeeInfo.setEmployeeCode("A" + req.getEmployeeCode());
+
+		List<EmployeeInfo> employeeIdList = employeeInfoDao.findAllById(req.getId());
+
+		if (!employeeIdList.isEmpty()) {
+			return null;
 		}
-		if (req.getSection().equals("會計")) {
-			employeeInfo.setEmployeeCode("B" + req.getEmployeeCode());
-		}
-		if (req.getSection().equals("敲詐")) {
-			employeeInfo.setEmployeeCode("C" + req.getEmployeeCode());
-		}
-		
+
 		if (req.getTitle().equals("員工")) {
 			employeeInfo.setLevel(0);
 		}
@@ -106,10 +127,10 @@ public class EmployeeInfoServiceImpl implements EmployeeInfoService {
 
 		return employeeInfoList;
 	}
-	
+
 	@Override
 	public EmployeeInfo readOneEmployeeInfo(EmployeeInfoReq req) {
-		
+
 		// 找DB有無重複的資料
 		Optional<EmployeeInfo> employeeInfoOp = employeeInfoDao.findById(req.getEmployeeCode());
 
