@@ -17,7 +17,7 @@ public interface WorkSystemService {
 	public WorkSystemRes searchWorkInfoForStaff(WorkSystemReq req);
 
 	// ---搜尋上班狀況 r 給主管的
-	public WorkSystemRes searchWorkInfoForManager(WorkSystemReq req,HttpSession httpSession);
+	public WorkSystemRes searchWorkInfoForManager(WorkSystemReq req);
 
 	// ---刪除上班狀況 (時間區間)
 	public WorkSystemRes deleteWorkInfoByDateBetween(WorkSystemReq req);
@@ -33,5 +33,7 @@ public interface WorkSystemService {
 
 	// ---刪除曠職時，叫出List產生出button讓用戶可藉由按鈕取得uuid
 	public WorkSystemRes getWorkInfoListAbsenteeism(WorkSystemReq req);
+	//---員工忘了打下班卡的修改
+	public WorkSystemRes updeateWorkOffTimeForManager(WorkSystemReq req);
 
 }

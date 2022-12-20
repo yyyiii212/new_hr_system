@@ -9,10 +9,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class SalarySystemRes {
 	private String message;
 	private SalarySystem salarySystem;
-	private List<SalarySystem> SalarySystemList;
+	private List<SalarySystem> salarySystemList;
 
 	public SalarySystemRes() {
 
+	}
+	public SalarySystemRes(List<SalarySystem> salarySystemList,String message) {
+		this.salarySystemList = salarySystemList;
+		this.message = message;
 	}
 
 	public SalarySystemRes(SalarySystem salarySystem, String message) {
@@ -42,11 +46,11 @@ public class SalarySystemRes {
 	}
 
 	public List<SalarySystem> getSalarySystemList() {
-		return SalarySystemList;
+		return salarySystemList;
 	}
 
 	public void setSalarySystemList(List<SalarySystem> salarySystemList) {
-		SalarySystemList = salarySystemList;
+		this.salarySystemList = salarySystemList;
 	}
 
 }
