@@ -7,33 +7,34 @@ import com.example.new_hr_system.vo.WorkSystemRes;
 
 public interface WorkSystemService {
 
-	// ---上班打卡 c
+	/*--------------------(員工)打卡上班*/
 	public WorkSystemRes punchToWork(WorkSystemReq req);
 
-	// ---下班打卡 u
+	/*--------------------(員工)打卡下班*/
 	public WorkSystemRes punchToOffWork(WorkSystemReq req);
 
-	// ---搜尋上班狀況 r 給員工的
+	/*--------------------(員工)搜尋打卡資料*/
 	public WorkSystemRes searchWorkInfoForStaff(WorkSystemReq req);
 
-	// ---搜尋上班狀況 r 給主管的
+	/*--------------------(主管)搜尋打卡資料*/
 	public WorkSystemRes searchWorkInfoForManager(WorkSystemReq req);
 
-	// ---刪除上班狀況 (時間區間)
+	/*--------------------(大老闆)刪除時間區間的打卡資料*/
 	public WorkSystemRes deleteWorkInfoByDateBetween(WorkSystemReq req);
 
-	// ---新增曠職行為 (給主管key)
+	/*--------------------(主管)新增曠職行為*/
 	public WorkSystemRes creatAbsenteeismForManager(WorkSystemReq req);
 
-	// ---刪除<曠職>行為 (給主管key)
+	/*--------------------(主管)刪除曠職行為*/
 	public WorkSystemRes deleteAbsenteeismForManager(WorkSystemReq req);
 
-	// ---打卡下班時，叫出List產生出button讓用戶可藉由按鈕取得uuid
+	/*--------------------(員工)印出打卡資訊給下班打卡用*/
 	public WorkSystemRes getWorkInfoListToday(WorkSystemReq req);
 
-	// ---刪除曠職時，叫出List產生出button讓用戶可藉由按鈕取得uuid
+	/*--------------------(主管)印出打卡資訊給刪除曠職行為用*/
 	public WorkSystemRes getWorkInfoListAbsenteeism(WorkSystemReq req);
-	//---員工忘了打下班卡的修改
+
+	/*--------------------(主管)員工沒打卡下班找主管補打卡*/
 	public WorkSystemRes updeateWorkOffTimeForManager(WorkSystemReq req);
 
 }
