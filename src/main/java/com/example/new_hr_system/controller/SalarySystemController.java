@@ -35,11 +35,10 @@ public class SalarySystemController {
 
 	@PostMapping(value = "/api/creatSalarySystem")
 	public SalarySystemRes creatSalarySystem(@RequestBody SalarySystemReq req, HttpSession httpSession) {
-//		httpSession.setAttribute("EmployeeCode", "a95");
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
 //		if (!employeeCodeString.equals(req.getSalaryEmployeeCode()) || employeeCode == null) {
-//			return new SalarySystemRes("請輸入自己的員工編號新增薪水資料");
+//			return new SalarySystemRes("請輸入自己的員工編號新增薪水資料或者嘗試重新登入");
 //		}
 		return salarySystemService.creatSalarySystem(req);
 	}
@@ -48,10 +47,10 @@ public class SalarySystemController {
 
 	@PostMapping(value = "/api/updateSalarySystem")
 	public SalarySystemRes updateSalarySystem(@RequestBody SalarySystemReq req, HttpSession httpSession) {
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getSalaryEmployeeCode()) || employeeCode == null) {
-//			return new SalarySystemRes("請輸入自己的員工編號更新薪水資料");
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if (employeeCode == null || !employeeCodeString.equals(req.getSalaryEmployeeCode())) {
+//			return new SalarySystemRes("請輸入自己的員工編號更新薪水資料或者嘗試重新登入");
 //		}
 		return salarySystemService.updateSalarySystem(req);
 	}
@@ -59,21 +58,21 @@ public class SalarySystemController {
 
 	@PostMapping(value = "/api/searchSalarySystemForStaff")
 	public SalarySystemRes searchSalarySystemForStaff(@RequestBody SalarySystemReq req, HttpSession httpSession) {
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getEmployeeCode()) || employeeCode == null) {
-//			return new SalarySystemRes("員工請輸入自己的編號查詢資料");
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if ( employeeCode == null||!employeeCodeString.equals(req.getEmployeeCode()) ) {
+//			return new SalarySystemRes("員工請輸入自己的編號查詢資料或者嘗試重新登入");
 //		}
 		return salarySystemService.searchSalarySystemForStaff(req);
 	}
 
 	// -------------------------------------------------
-	@PostMapping(value = "/api/searchSalarySystemForManager") 
+	@PostMapping(value = "/api/searchSalarySystemForManager")
 	public SalarySystemRes searchSalarySystemForManager(@RequestBody SalarySystemReq req, HttpSession httpSession) {
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getSalaryEmployeeCode()) || employeeCode == null) {
-//			return new SalarySystemRes("請輸入自己的員工編號查詢");
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if ( employeeCode == null||!employeeCodeString.equals(req.getSalaryEmployeeCode()) ) {
+//			return new SalarySystemRes("請輸入自己的員工編號查詢或者嘗試重新登入");
 //		}
 		return salarySystemService.searchSalarySystemForManager(req);
 	}

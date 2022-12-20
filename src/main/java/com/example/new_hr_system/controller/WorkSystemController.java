@@ -38,11 +38,10 @@ public class WorkSystemController {
 	// ---打卡上班
 	@PostMapping(value = "/api/punchToWork")
 	public WorkSystemRes punchToWork(@RequestBody WorkSystemReq req, HttpSession httpSession) {
-//		httpSession.setAttribute("EmployeeCode", "a95");
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getEmployeeCode()) || employeeCode == null) {
-//			return new WorkSystemRes("請輸入自己的員工編號打卡");
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if (employeeCode == null || !employeeCodeString.equals(req.getEmployeeCode())) {
+//			return new WorkSystemRes("請輸入自己的員工編號打卡或者嘗試重新登入");
 //		}
 
 		return workSystemService.punchToWork(req);
@@ -51,10 +50,10 @@ public class WorkSystemController {
 	// ---下班打卡<v>
 	@PostMapping(value = "/api/punchToOffWork")
 	public WorkSystemRes punchToOffWork(@RequestBody WorkSystemReq req, HttpSession httpSession) {
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getEmployeeCode()) || employeeCode == null) {
-//			return new WorkSystemRes("請輸入自己的員工編號打卡下班");
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if (employeeCode == null || !employeeCodeString.equals(req.getEmployeeCode())) {
+//			return new WorkSystemRes("請輸入自己的員工編號打卡下班或者嘗試重新登入");
 //		}
 		return workSystemService.punchToOffWork(req);
 	}
@@ -62,11 +61,10 @@ public class WorkSystemController {
 	// ---給員工的搜尋
 	@PostMapping(value = "/api/searchWorkInfoForStaff")
 	public WorkSystemRes searchWorkInfoForStaff(@RequestBody WorkSystemReq req, HttpSession httpSession) {
-//		httpSession.setAttribute("EmployeeCode", "a95");
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getEmployeeCode()) || employeeCode == null) {
-//			return new WorkSystemRes("請輸入自己的員工編號搜尋");
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if (employeeCode == null || !employeeCodeString.equals(req.getEmployeeCode())) {
+//			return new WorkSystemRes("請輸入自己的員工編號搜尋或者嘗試重新登入");
 //		}
 		return workSystemService.searchWorkInfoForStaff(req);
 	}
@@ -74,12 +72,12 @@ public class WorkSystemController {
 	// ---給主管的搜尋
 	@PostMapping(value = "/api/searchWorkInfoForManager")
 	public WorkSystemRes searchWorkInfoForManager(@RequestBody WorkSystemReq req, HttpSession httpSession) {
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getManagerEmployeeCode()) || employeeCode == null) {
-//			return new WorkSystemRes("請輸入自己的主管編號搜尋主管");
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if (employeeCode == null || !employeeCodeString.equals(req.getManagerEmployeeCode())) {
+//			return new WorkSystemRes("請輸入自己的主管編號搜尋主管或者嘗試重新登入");
 //		}
-		return workSystemService.searchWorkInfoForManager(req, httpSession);
+		return workSystemService.searchWorkInfoForManager(req);
 	}
 
 	// ---給最大的boss刪除 (用於清空數據庫，過滿時會消耗效能)<求密碼>
@@ -94,11 +92,11 @@ public class WorkSystemController {
 	// ---給主管的新增曠職行為
 	@PostMapping(value = "/api/creatAbsenteeismForManager")
 	public WorkSystemRes creatAbsenteeismForManager(@RequestBody WorkSystemReq req, HttpSession httpSession) {
-//		httpSession.setAttribute("EmployeeCode", "a95");
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getManagerEmployeeCode()) || employeeCode == null) {
-//			return new WorkSystemRes("請輸入自己的主管編號新增曠職");
+
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if (employeeCode == null || !employeeCodeString.equals(req.getManagerEmployeeCode())) {
+//			return new WorkSystemRes("請輸入自己的主管編號新增曠職或者嘗試重新登入");
 //		}
 		return workSystemService.creatAbsenteeismForManager(req);
 	}
@@ -107,10 +105,10 @@ public class WorkSystemController {
 	@PostMapping(value = "/api/deleteAbsenteeismForManager")
 	public WorkSystemRes deleteAbsenteeismForManager(@RequestBody WorkSystemReq req, HttpSession httpSession) {
 
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getManagerEmployeeCode()) || employeeCode == null) {
-//			return new WorkSystemRes("請輸入自己的主管編號刪除曠職");
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if (employeeCode == null || !employeeCodeString.equals(req.getManagerEmployeeCode())) {
+//			return new WorkSystemRes("請輸入自己的主管編號刪除曠職或者嘗試重新登入");
 //		}
 		return workSystemService.deleteAbsenteeismForManager(req);
 	}
@@ -118,10 +116,10 @@ public class WorkSystemController {
 	// ---打印出打卡資訊getWorkInfoListToday (打卡下班)
 	@PostMapping(value = "/api/getWorkInfoListToday")
 	public WorkSystemRes getWorkInfoListToday(@RequestBody WorkSystemReq req, HttpSession httpSession) {
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getEmployeeCode()) || employeeCode == null) {
-//			return new WorkSystemRes("請輸入自己的員工編號拿到今天的上班時間");
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if (employeeCode == null || !employeeCodeString.equals(req.getEmployeeCode())) {
+//			return new WorkSystemRes("請輸入自己的員工編號拿到今天的上班時間或者嘗試重新登入");
 //		}
 
 		return workSystemService.getWorkInfoListToday(req);
@@ -130,12 +128,23 @@ public class WorkSystemController {
 	// ---打印出打卡資訊getWorkInfoListAbsenteeism (刪除曠職)
 	@PostMapping(value = "/api/getWorkInfoListAbsenteeism")
 	public WorkSystemRes getWorkInfoListAbsenteeism(@RequestBody WorkSystemReq req, HttpSession httpSession) {
-//		Object employeeCode = httpSession.getAttribute("EmployeeCode");
-//		String employeeCodeString = httpSession.getAttribute("EmployeeCode").toString();
-//		if (!employeeCodeString.equals(req.getManagerEmployeeCode()) || employeeCode == null) {
-//			return new WorkSystemRes("請輸入自己的主管編號");
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if (employeeCode == null||!employeeCodeString.equals(req.getManagerEmployeeCode()) ) {
+//			return new WorkSystemRes("請輸入自己的主管編號或者嘗試重新登入");
 //		}
 		return workSystemService.getWorkInfoListAbsenteeism(req);
+	}
+
+	// ---給主管的搜尋 (搜尋後補打卡)
+	@PostMapping(value = "/api/updeateWorkOffTimeForManager")
+	public WorkSystemRes updeateWorkOffTimeForManager(@RequestBody WorkSystemReq req, HttpSession httpSession) {
+//		Object employeeCode = httpSession.getAttribute("employee_code");
+//		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
+//		if (employeeCode == null|| (!employeeCodeString.equals(req.getManagerEmployeeCode()))) {
+//			return new WorkSystemRes("請輸入自己的主管編號或者嘗試重新登入");
+//		}
+		return workSystemService.updeateWorkOffTimeForManager(req);
 	}
 
 }
