@@ -1,6 +1,7 @@
 package com.example.new_hr_system.service.impl;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,7 @@ import com.example.new_hr_system.service.ifs.AbsenceSystemService;
 import com.example.new_hr_system.vo.AbsenceSystemReq;
 import com.example.new_hr_system.vo.AbsenceSystemRes;
 import com.example.new_hr_system.vo.AbsenceSystemResList;
+import com.example.new_hr_system.vo.EmployeeInfoRes;
 
 @Service
 public class AbsenceSystemServiceImpl implements AbsenceSystemService {
@@ -42,20 +44,20 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 	@Autowired
 	private JavaMailSender mailSender;
 
-	// 創建請假表單,並寄送email提醒主管批准
+	// 創建請假表單(單筆),並寄送email提醒主管批准
 	@Override
 	public AbsenceSystemRes addAbsence(AbsenceSystemReq req, HttpSession httpSession) {
 
 		if (!StringUtils.hasText(req.getAbsenceReason())) {
 			return new AbsenceSystemRes(AbsenceSystemRtnCode.ABSENCE_REASON_REQOIRED.getMessage());
-		} 
+		}
 		Object attValue = httpSession.getAttribute("employee_code");
 		if (attValue == null) {
 			return new AbsenceSystemRes(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
 		}
 
 		String employeeCode = attValue.toString();
-		
+
 		EmployeeInfo employee = employeeInfoDao.findById(employeeCode).get();
 
 		if (!employee.getEmployeeCode().equalsIgnoreCase(employeeCode)) {
@@ -74,8 +76,52 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 		gmail.setFrom("kennymax22581997@gmail.com");
 		gmail.setTo(req.getEmail());
 		gmail.setSubject("主旨：柬埔寨旅遊團員工假單批准");
-		gmail.setText("員工: " + employeeInfo.getEmployeeCode() + " " + employeeInfo.getName() + " 有假單需要批准" +
-		"   請假日期: "+ req.getAbsenceDate() + "   事由: " + req.getAbsenceStr() );
+		gmail.setText("員工: " + employeeInfo.getEmployeeCode() + " " + employeeInfo.getName() + " 有假單需要批准" + "   請假日期: "
+				+ req.getAbsenceDate() + "   事由: " + req.getAbsenceStr());
+		mailSender.send(gmail);
+
+		return new AbsenceSystemRes(AbsenceSystemRtnCode.SUCCESSFUL.getMessage());
+	}
+
+	// 創建請假表單(多筆),並寄送email提醒主管批准
+	@Override
+	public AbsenceSystemRes addAbsences(AbsenceSystemReq req, HttpSession httpSession) {
+		if (!StringUtils.hasText(req.getAbsenceReason())) {
+			return new AbsenceSystemRes(AbsenceSystemRtnCode.ABSENCE_REASON_REQOIRED.getMessage());
+		}
+		Object attValue = httpSession.getAttribute("employee_code");
+		if (attValue == null) {
+			return new AbsenceSystemRes(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
+		}
+
+		String employeeCode = attValue.toString();
+
+		EmployeeInfo employee = employeeInfoDao.findById(employeeCode).get();
+
+		if (!employee.getEmployeeCode().equalsIgnoreCase(employeeCode)) {
+			return new AbsenceSystemRes(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
+		}
+		  long y = req.getAbsenceEndDate().toEpochDay() - req.getAbsenceStartDate().toEpochDay();
+		
+		List<AbsenceSystem> absenceList = new ArrayList<>();
+		
+		
+		for(int x = 0; x <= y; x++ ) {
+			AbsenceSystem absence = new AbsenceSystem(UUID.randomUUID(), employeeCode, req.getAbsenceReason(),
+					req.getAbsenceStartDate().plusDays(x));
+			absenceList.add(absence);
+		}
+		
+
+		absenceSystemDao.saveAll(absenceList);
+
+		SimpleMailMessage gmail = new SimpleMailMessage();
+
+		gmail.setFrom("kennymax22581997@gmail.com");
+		gmail.setTo(req.getEmail());
+		gmail.setSubject("主旨：柬埔寨旅遊團員工假單批准");
+		gmail.setText("員工: " + employee.getEmployeeCode() + " " + employee.getName() + " 有假單需要批准" + "   請假日期: "
+				+ req.getAbsenceStartDate() + "~" + req.getAbsenceEndDate() + "   事由: " + req.getAbsenceStr());
 		mailSender.send(gmail);
 
 		return new AbsenceSystemRes(AbsenceSystemRtnCode.SUCCESSFUL.getMessage());
@@ -176,7 +222,7 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 					if (manager.getSection().equalsIgnoreCase(employeeItem.getSection())
 							&& manager.getLevel() > employeeItem.getLevel() && absenceItem.getYesOrNo() == 0) {
 
-						//多加uuid
+						// 多加uuid
 						AbsenceSystemRes res = new AbsenceSystemRes();
 						res.setUuid(absenceItem.getUuid());
 						res.setEmployeeCode(employeeItem.getEmployeeCode());
@@ -271,24 +317,62 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 		return false;
 	}
 
-	//更新請假表單
+	// 更新請假表單
 	@Override
 	public AbsenceSystemRes updateAbsence(AbsenceSystemReq req) {
-		if(!StringUtils.hasText(req.getUuid())) {
+		if (!StringUtils.hasText(req.getUuid())) {
 			return new AbsenceSystemRes(AbsenceSystemRtnCode.UUID_EMPTY.getMessage());
 		}
 		UUID uuid = UUID.fromString(req.getUuid());
-		 AbsenceSystem absence = absenceSystemDao.findById(uuid).get();
-		 
-		 if (StringUtils.hasText(req.getAbsenceReason())) {
-			 absence.setAbsenceReason(req.getAbsenceReason());;
+		AbsenceSystem absence = absenceSystemDao.findById(uuid).get();
+
+		if (StringUtils.hasText(req.getAbsenceReason())) {
+			absence.setAbsenceReason(req.getAbsenceReason());
+			;
+		}
+		if (req.getAbsenceDate() != null) {
+			absence.setAbsenceDate(req.getAbsenceDate());
+			;
+		}
+		absenceSystemDao.save(absence);
+
+		return new AbsenceSystemRes(absence, AbsenceSystemRtnCode.SUCCESSFUL.getMessage());
+	}
+
+	// 員工顯示自己部門主管的email
+	@Override
+	public EmployeeInfoRes getManagerEmailByEmployeeCode(HttpSession httpSession) {
+
+		Object attValue = httpSession.getAttribute("employee_code");
+
+		if (attValue == null) {
+			return new EmployeeInfoRes(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
+		}
+		List<EmployeeInfo> employeeInfoList = employeeInfoDao.findAll();
+		String employeeCode = attValue.toString();
+
+		EmployeeInfo employeeInfo = new EmployeeInfo();
+		List<EmployeeInfo> managerInfoList = new ArrayList<>();
+
+		for (EmployeeInfo item : employeeInfoList) {
+			if (item.getEmployeeCode().equalsIgnoreCase(employeeCode)) {
+				employeeInfo.setSection(item.getSection());
+				employeeInfo.setLevel(item.getLevel());
 			}
-			if (req.getAbsenceDate() != null) {
-				absence.setAbsenceDate(req.getAbsenceDate());;
+
+		}
+
+		for (EmployeeInfo item : employeeInfoList) {
+			if (item.getSection().equalsIgnoreCase(employeeInfo.getSection())
+					&& item.getLevel() > employeeInfo.getLevel()) {
+
+				managerInfoList.add(item);
 			}
-			absenceSystemDao.save(absence);
-		
-		return new AbsenceSystemRes(absence,AbsenceSystemRtnCode.SUCCESSFUL.getMessage());
+
+		}
+		EmployeeInfoRes res = new EmployeeInfoRes();
+		res.setEmployeeInfoList(managerInfoList);
+		return res;
 	}
 
 }

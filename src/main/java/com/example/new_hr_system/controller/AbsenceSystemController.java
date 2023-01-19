@@ -11,21 +11,30 @@ import com.example.new_hr_system.service.ifs.AbsenceSystemService;
 import com.example.new_hr_system.vo.AbsenceSystemReq;
 import com.example.new_hr_system.vo.AbsenceSystemRes;
 import com.example.new_hr_system.vo.AbsenceSystemResList;
+import com.example.new_hr_system.vo.EmployeeInfoRes;
 
 @RestController
 public class AbsenceSystemController {
-	//20:39
+	// 20:39
 
 	@Autowired
 	private AbsenceSystemService absenceSystemService;
 
-	// 員工新增假單
+	// 員工新增假單(單筆)
 	@PostMapping(value = "/api/addAbsence")
 	public AbsenceSystemRes addAbsence(@RequestBody AbsenceSystemReq req, HttpSession httpSession) {
 
 		return absenceSystemService.addAbsence(req, httpSession);
 
 	}
+	
+	// 員工新增假單(多筆)
+		@PostMapping(value = "/api/addAbsences")
+		public AbsenceSystemRes addAbsences(@RequestBody AbsenceSystemReq req, HttpSession httpSession) {
+
+			return absenceSystemService.addAbsences(req, httpSession);
+
+		}
 
 	// 刪除假單
 	@PostMapping(value = "/api/deleteAbsence")
@@ -81,6 +90,14 @@ public class AbsenceSystemController {
 	public AbsenceSystemRes updateAbsence(@RequestBody AbsenceSystemReq req) {
 
 		return absenceSystemService.updateAbsence(req);
+
+	}
+
+	// 員工顯示自己部門主管的email
+	@PostMapping(value = "/api/getManagerEmailByEmployeeCode")
+	public EmployeeInfoRes getManagerEmailByEmployeeCode(HttpSession httpSession) {
+
+		return absenceSystemService.getManagerEmailByEmployeeCode(httpSession);
 
 	}
 

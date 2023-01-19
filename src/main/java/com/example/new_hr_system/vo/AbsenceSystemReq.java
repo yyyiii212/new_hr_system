@@ -17,6 +17,12 @@ public class AbsenceSystemReq {
 	@JsonFormat(shape =JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate absenceDate;
 	
+	@JsonFormat(shape =JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private LocalDate absenceStartDate;
+	
+	@JsonFormat(shape =JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private LocalDate absenceEndDate;
+	
 	private String email;
 	
 	private int yesOrNo;
@@ -109,6 +115,22 @@ public class AbsenceSystemReq {
 
 	public void setAbsenceStr(String absenceStr) {
 		this.absenceStr = absenceStr;
+	}
+
+	public LocalDate getAbsenceStartDate() {
+		return absenceStartDate;
+	}
+
+	public void setAbsenceStartDate(LocalDate absenceStartDate) {
+		this.absenceStartDate = absenceStartDate;
+	}
+
+	public LocalDate getAbsenceEndDate() {
+		return absenceEndDate;
+	}
+
+	public void setAbsenceEndDate(LocalDate absenceEndDate) {
+		this.absenceEndDate = absenceEndDate;
 	}
 	
 
