@@ -190,54 +190,64 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 		}
 		return new AbsenceSystemResList(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
 	}
+	
 
 	// 依照主管等級和所屬部門顯示假單
-	@Override
-	public AbsenceSystemResList getAbsenceBySectionAndLevel(HttpSession httpSession) {
+	 @Override
+	 public AbsenceSystemResList getAbsenceBySectionAndLevel(HttpSession httpSession) {
 
-		Object attValue = httpSession.getAttribute("employee_code");
+	  Object attValue = httpSession.getAttribute("employee_code");
 
-		if (!StringUtils.hasText(attValue.toString())) {
-			return new AbsenceSystemResList(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
-		}
-		// 批假單的人的資料
-		EmployeeInfo manager = employeeInfoDao.findById(attValue.toString()).get();
+	  if (!StringUtils.hasText(attValue.toString())) {
+	   return new AbsenceSystemResList(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
+	  }
+	  // 批假單的人的資料
+	  EmployeeInfo manager = employeeInfoDao.findById(attValue.toString()).get();
 
-		// 所有員工資料
-		List<EmployeeInfo> employeeList = employeeInfoDao.findAll();
+	  // 所有員工資料
+	  List<EmployeeInfo> employeeList = employeeInfoDao.findAll();
 
-		// 所有假單
-		List<AbsenceSystem> absenceList = absenceSystemDao.findAllByOrderByAbsenceDateDesc();
+	  // 所有假單
+	  List<AbsenceSystem> absenceList = absenceSystemDao.findAllByOrderByAbsenceDateDesc();
 
-		// 要顯示的假單
-		List<AbsenceSystemRes> absenceResList = new ArrayList<>();
+	  // 要顯示的假單
+	  List<AbsenceSystemRes> absenceResList = new ArrayList<>();
 
-		for (AbsenceSystem absenceItem : absenceList) {
+	  for (AbsenceSystem absenceItem : absenceList) {
 
-			for (EmployeeInfo employeeItem : employeeList) {
+	   for (EmployeeInfo employeeItem : employeeList) {
 
-				if (absenceItem.getEmployeeCode().equalsIgnoreCase(employeeItem.getEmployeeCode())) {
+	    if (manager.getSection().equals("人資") && manager.getLevel() >= 1 && absenceItem.getYesOrNo() == 0) {
 
-					if (manager.getSection().equalsIgnoreCase(employeeItem.getSection())
-							&& manager.getLevel() > employeeItem.getLevel() && absenceItem.getYesOrNo() == 0) {
+	     AbsenceSystemRes res = new AbsenceSystemRes();
+	     res.setUuid(absenceItem.getUuid());
+	     res.setEmployeeCode(employeeItem.getEmployeeCode());
+	     res.setName(employeeItem.getName());
+	     res.setSection(employeeItem.getSection());
+	     res.setAbsenceReason(absenceItem.getAbsenceReason());
+	     res.setAbsenceDate(absenceItem.getAbsenceDate());
+	     absenceResList.add(res);
+	    } else if (absenceItem.getEmployeeCode().equalsIgnoreCase(employeeItem.getEmployeeCode())) {
 
-						// 多加uuid
-						AbsenceSystemRes res = new AbsenceSystemRes();
-						res.setUuid(absenceItem.getUuid());
-						res.setEmployeeCode(employeeItem.getEmployeeCode());
-						res.setName(employeeItem.getName());
-						res.setSection(employeeItem.getSection());
-						res.setAbsenceReason(absenceItem.getAbsenceReason());
-						res.setAbsenceDate(absenceItem.getAbsenceDate());
-						absenceResList.add(res);
-					}
-				}
-			}
-		}
-		AbsenceSystemResList finalRes = new AbsenceSystemResList();
-		finalRes.setAbsenceSystemResList(absenceResList);
-		return finalRes;
-	}
+	     if (manager.getSection().equalsIgnoreCase(employeeItem.getSection())
+	       && manager.getLevel() > employeeItem.getLevel() && absenceItem.getYesOrNo() == 0) {
+
+	      AbsenceSystemRes res = new AbsenceSystemRes();
+	      res.setUuid(absenceItem.getUuid());
+	      res.setEmployeeCode(employeeItem.getEmployeeCode());
+	      res.setName(employeeItem.getName());
+	      res.setSection(employeeItem.getSection());
+	      res.setAbsenceReason(absenceItem.getAbsenceReason());
+	      res.setAbsenceDate(absenceItem.getAbsenceDate());
+	      absenceResList.add(res);
+	     }
+	    }
+	   }
+	  }
+	  AbsenceSystemResList finalRes = new AbsenceSystemResList();
+	  finalRes.setAbsenceSystemResList(absenceResList);
+	  return finalRes;
+	 }
 
 	// 主管批示假單,並寄送email給員工
 	@Override
@@ -339,39 +349,50 @@ public class AbsenceSystemServiceImpl implements AbsenceSystemService {
 	}
 
 	// 員工顯示自己部門主管的email
-	@Override
-	public EmployeeInfoRes getManagerEmailByEmployeeCode(HttpSession httpSession) {
+	 @Override
+	 public EmployeeInfoRes getManagerEmailByEmployeeCode(HttpSession httpSession) {
 
-		Object attValue = httpSession.getAttribute("employee_code");
+	  Object attValue = httpSession.getAttribute("employee_code");
 
-		if (attValue == null) {
-			return new EmployeeInfoRes(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
-		}
-		List<EmployeeInfo> employeeInfoList = employeeInfoDao.findAll();
-		String employeeCode = attValue.toString();
+	  if (attValue == null) {
+	   return new EmployeeInfoRes(AbsenceSystemRtnCode.EMPLOYEE_CODE_REQOIRED.getMessage());
+	  }
+	  List<EmployeeInfo> employeeInfoList = employeeInfoDao.findAll();
+	  String employeeCode = attValue.toString();
 
-		EmployeeInfo employeeInfo = new EmployeeInfo();
-		List<EmployeeInfo> managerInfoList = new ArrayList<>();
+	  EmployeeInfo employee = employeeInfoDao.findById(employeeCode).get();
 
-		for (EmployeeInfo item : employeeInfoList) {
-			if (item.getEmployeeCode().equalsIgnoreCase(employeeCode)) {
-				employeeInfo.setSection(item.getSection());
-				employeeInfo.setLevel(item.getLevel());
-			}
+	  EmployeeInfo employeeInfo = new EmployeeInfo();
+	  List<EmployeeInfo> managerInfoList = new ArrayList<>();
 
-		}
+	  for (EmployeeInfo item : employeeInfoList) {
+	   if (item.getEmployeeCode().equalsIgnoreCase(employeeCode)) {
+	    employeeInfo.setSection(item.getSection());
+	    employeeInfo.setLevel(item.getLevel());
+	   }
+	  }
+	  for (EmployeeInfo item : employeeInfoList) {
+	   if (item.getSection().equalsIgnoreCase(employeeInfo.getSection())
+	     && item.getLevel() > employeeInfo.getLevel()) {
 
-		for (EmployeeInfo item : employeeInfoList) {
-			if (item.getSection().equalsIgnoreCase(employeeInfo.getSection())
-					&& item.getLevel() > employeeInfo.getLevel()) {
+	    managerInfoList.add(item);
+	   }
+	  }
+	  if (!employee.getSection().equals("人資")) {
 
-				managerInfoList.add(item);
-			}
+	   for (EmployeeInfo item : employeeInfoList) {
+	    if (item.getSection().equalsIgnoreCase("人資") && item.getLevel() >= 1) {
 
-		}
-		EmployeeInfoRes res = new EmployeeInfoRes();
-		res.setEmployeeInfoList(managerInfoList);
-		return res;
-	}
+	     managerInfoList.add(item);
+	    }
+	   }
+	  } else if (employee.getSection().equals("人資") && employee.getLevel() >= 2) {
+
+	   managerInfoList.add(employee);
+	  }
+	  EmployeeInfoRes res = new EmployeeInfoRes();
+	  res.setEmployeeInfoList(managerInfoList);
+	  return res;
+	 }
 
 }
