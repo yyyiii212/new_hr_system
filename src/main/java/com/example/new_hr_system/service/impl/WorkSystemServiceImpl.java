@@ -58,15 +58,19 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 
 		// 藉由員工編號撈資料(判斷有無重複打卡)
 		List<WorkSystem> staffInfo = workSystemDao.findByEmployeeCode(req.getEmployeeCode());
+
 		// 年分、月份、日 都一樣時 代表打過卡了
 		for (WorkSystem item : staffInfo) {
 			LocalDate localDate = item.getWorkTime().toLocalDate();
 			if (localDate.equals(LocalDate.now())) {
 				return new WorkSystemRes("勿重複打卡");
 			}
+
 		}
-		WorkSystem workSystem = new WorkSystem(UUID.randomUUID(), req.getEmployeeCode(), LocalDateTime.now(), null,
-				null, 0);
+		DateTimeFormatter formatDateTime = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm");
+		String nowDateTimeString = LocalDateTime.now().format(formatDateTime);
+		LocalDateTime finalDateTime = LocalDateTime.parse(nowDateTimeString, formatDateTime);
+		WorkSystem workSystem = new WorkSystem(UUID.randomUUID(), req.getEmployeeCode(), finalDateTime, null, null, 0);
 		workSystemDao.save(workSystem);
 		return new WorkSystemRes(workSystem, "上班打卡成功");
 
@@ -112,8 +116,12 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 
 		// 字串更新狀況
 		String attendanceStatusStr;
+		DateTimeFormatter formatDateTime = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm");
+		String nowDateTimeString = LocalDateTime.now().format(formatDateTime);
+		LocalDateTime finalDateTime = LocalDateTime.parse(nowDateTimeString, formatDateTime);
 
-		// 第一種:遲到+早退 = 上班時間 >= 9:00 & 上班分鐘 >= 1 & 下班小時 < 18
+		// 第一種:遲到+早退 = (上班時間 >= 9:00 & 上班分鐘 >= 1 & 下班小時 < 18) ||(上班時間 > 9:00 & 下班時間 <
+		// 18)
 		// 1 = > (ps.計入時數為 : 遲到的時數 ps.18=幾點下班)
 		// 第二種:遲到 =上班小時 >= 9:00 & 上班分鐘 >= 1 (為了防9:00) 或是 上班小時 > 9:00 (ps.計入時數為 : 遲到的時數)
 		// 2 = >防(9:00)或大於(10:00)的情況
@@ -121,8 +129,9 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		// 3 => ps.計入時數為正常時數
 		// 第四種:正常 = 上述都不合 (ps.計入時數為 :正常的時數)
 
-		if ((workSystem.getWorkTime().getHour() >= 9 && workSystem.getWorkTime().getMinute() >= 1)
-				&& LocalDateTime.now().getHour() < 18) {
+		if (((workSystem.getWorkTime().getHour() >= 9 && workSystem.getWorkTime().getMinute() >= 1)
+				&& LocalDateTime.now().getHour() < 18)
+				|| (workSystem.getWorkTime().getHour() > 9 && LocalDateTime.now().getHour() < 18)) {
 			attendanceStatusStr = "遲到+早退";
 			// 防止 EX: 7 : 55 打卡上班 8:00 打卡下班 ，得出的遲到時數卻是 1 所以 超過 x : 30 直接 x+1
 			if (workSystem.getWorkTime().getMinute() > 30) {
@@ -132,7 +141,7 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 			if (countWorkLateOrLeaveTime <= 0) {
 				countWorkLateOrLeaveTime = 0;
 			}
-			workSystem.setOffWorkTime(LocalDateTime.now());
+			workSystem.setOffWorkTime(finalDateTime);
 			workSystem.setAttendanceStatus(attendanceStatusStr);
 			workSystem.setAttendanceHours(countWorkLateOrLeaveTime);
 
@@ -147,7 +156,7 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 			if (countWorkLateOrLeaveTime <= 0) {
 				countWorkLateOrLeaveTime = 0;
 			}
-			workSystem.setOffWorkTime(LocalDateTime.now());
+			workSystem.setOffWorkTime(finalDateTime);
 			workSystem.setAttendanceStatus(attendanceStatusStr);
 			workSystem.setAttendanceHours(countWorkLateOrLeaveTime);
 		} else if (LocalDateTime.now().getHour() < 18) {
@@ -156,12 +165,12 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 			if (countOffWorkHours <= 0) {
 				countOffWorkHours = 0;
 			}
-			workSystem.setOffWorkTime(LocalDateTime.now());
+			workSystem.setOffWorkTime(finalDateTime);
 			workSystem.setAttendanceStatus(attendanceStatusStr);
 			workSystem.setAttendanceHours(countOffWorkHours);
 		} else {
 			attendanceStatusStr = "正常";
-			workSystem.setOffWorkTime(LocalDateTime.now());
+			workSystem.setOffWorkTime(finalDateTime);
 			workSystem.setAttendanceStatus(attendanceStatusStr);
 			workSystem.setAttendanceHours(countOffWorkHours);
 		}
@@ -574,6 +583,11 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 			return new WorkSystemRes("您與該員工不同部門");
 		}
 
+		// 判斷要要記曠職者與被記曠職者的階級
+		if (employeeManagerInfo.getLevel() < employeeStaffInfo.getLevel()) {
+			return new WorkSystemRes("您的權限不夠");
+		}
+
 		// 日期ㄉ正規表達
 		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
 		String checkDateString = "^[1-9]\\d{3}-(0[1-9]|1[0-2]|[1-9])-([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])";
@@ -656,7 +670,7 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		return res;
 	}
 
-	/*------------------------------------------------(主管)印出打卡資訊給刪除曠職行為用*/
+	/*------------------------------------------------(主管)印出曠職資訊給刪除曠職行為用*/
 	@Override
 	public WorkSystemRes getWorkInfoListAbsenteeism(WorkSystemReq req) {
 		DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyy-M-d");
@@ -679,6 +693,12 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		if (!employeeStaffInfo.getSection().equals(employeeManagerInfo.getSection())) {
 			return new WorkSystemRes("您與該員工不同部門");
 		}
+
+		// 判斷要要記曠職者與被記曠職者的階級
+		if (employeeManagerInfo.getLevel() < employeeStaffInfo.getLevel()) {
+			return new WorkSystemRes("您的權限不夠");
+		}
+		
 		// 尾數是00:00:00
 		LocalDateTime absenteeismDateTime = absenteeismDate.atStartOfDay();
 		// 因為新增曠職時 尾數是00:00:00 所以只要日期正確一定可以找到
@@ -690,7 +710,7 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		return new WorkSystemRes(workInfoList, " 部門 : " + employeeManagerInfo.getSection());
 	}
 
-	/*------------------------------------------------(主管)員工沒打卡下班找主管補打卡*/
+	/*------------------------------------------------(主管)員工沒打卡下班找主管補打下班卡*/
 	@Override
 	public WorkSystemRes updeateWorkOffTimeForManager(WorkSystemReq req) {
 		UUID uuid = UUID.fromString(req.getUuid());
@@ -705,6 +725,10 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		String reqDate = req.getOffWorkTime().replace('T', ' ');
 		// 轉成LocalDateTime
 		LocalDateTime offWorkTime = LocalDateTime.parse(reqDate, foemat);
+		if (offWorkTime.getYear() != LocalDateTime.now().getYear()
+				|| offWorkTime.getMonthValue() != LocalDateTime.now().getMonthValue()) {
+			return new WorkSystemRes("超過" + offWorkTime.getMonthValue() + "月，不能補打卡");
+		}
 
 		// 請求亂碼uuid ， 因為上班時打過卡了，固會產生(前端顯示時，藉由"按鈕"取得亂碼)
 		Optional<WorkSystem> workSystemOp = workSystemDao.findById(uuid);
@@ -734,7 +758,8 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		// 字串更新狀況
 		String attendanceStatusStr;
 
-		// 第一種:遲到+早退 = 上班時間 >= 9:00 & 上班分鐘 >= 1 & 下班小時 < 18
+		// 第一種:遲到+早退 = (上班時間 >= 9:00 & 上班分鐘 >= 1 & 下班小時 < 18) ||(上班時間 > 9:00 & 下班時間 <
+		// 18)
 		// 1 = > (ps.計入時數為 : 遲到的時數 ps.18=幾點下班)
 		// 第二種:遲到 =上班小時 >= 9:00 & 上班分鐘 >= 1 (為了防9:00) 或是 上班小時 > 9:00 (ps.計入時數為 : 遲到的時數)
 		// 2 = >防(9:00)或大於(10:00)的情況
@@ -742,8 +767,9 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		// 3 => ps.計入時數為正常時數
 		// 第四種:正常 = 上述都不合 (ps.計入時數為 :正常的時數)
 
-		if ((workSystem.getWorkTime().getHour() >= 9 && workSystem.getWorkTime().getMinute() >= 1)
-				&& offWorkTime.getHour() < 18) {
+		if (((workSystem.getWorkTime().getHour() >= 9 && workSystem.getWorkTime().getMinute() >= 1)
+				&& offWorkTime.getHour() < 18)
+				|| (workSystem.getWorkTime().getHour() > 9 && offWorkTime.getHour() < 18)) {
 			attendanceStatusStr = "遲到+早退";
 
 			// 防止 EX: 7 : 55 打卡上班 8:00 打卡下班 ，得出的遲到時數卻是 1 所以 超過 x : 30 直接 x+1
@@ -794,6 +820,128 @@ public class WorkSystemServiceImpl implements WorkSystemService {
 		}
 		workSystemDao.save(workSystem);
 		return new WorkSystemRes(workSystem, "下次請記得打卡");
+	}
+
+	/*------------------------------------------------(主管)員工沒打卡下班找主管補打卡*/
+	@Override
+	public WorkSystemRes forgotToPunchCard(WorkSystemReq req) {
+		// 前端接進來格式 YYYY-MM-DDTHH:MM
+		DateTimeFormatter foematDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		if (!StringUtils.hasText(req.getEmployeeCode()) || !StringUtils.hasText(req.getManagerEmployeeCode())
+				|| !StringUtils.hasText(req.getPunchWorkTime()) || !StringUtils.hasText(req.getOffWorkTime())) {
+			return new WorkSystemRes("參數值不能為空");
+		}
+
+		String workDateTimeString = req.getPunchWorkTime().replace('T', ' ');
+		String offWorkDateTimeString = req.getOffWorkTime().replace('T', ' ');
+
+		// 轉成LocalDateTime
+		LocalDateTime workDateTime = LocalDateTime.parse(workDateTimeString, foematDateTime);
+		LocalDateTime offWorkDateTime = LocalDateTime.parse(offWorkDateTimeString, foematDateTime);
+		if (workDateTime.getYear() != LocalDateTime.now().getYear()
+				|| workDateTime.getMonthValue() != LocalDateTime.now().getMonthValue()) {
+			return new WorkSystemRes("超過" + workDateTime.getMonthValue() + "月，不能補打卡");
+		}
+
+		Optional<EmployeeInfo> managerEmployeeInfoOp = employeeInfoDao.findById(req.getManagerEmployeeCode());
+		Optional<EmployeeInfo> employeeInfoOp = employeeInfoDao.findById(req.getEmployeeCode());
+
+		if (!employeeInfoOp.isPresent() || !managerEmployeeInfoOp.isPresent()) {
+			return new WorkSystemRes("請檢察員工編號");
+		}
+
+		EmployeeInfo employeeInfo = employeeInfoOp.get();
+		EmployeeInfo managerEmployeeInfo = managerEmployeeInfoOp.get();
+
+		if (!employeeInfo.getSection().equals(managerEmployeeInfo.getSection())) {
+			return new WorkSystemRes("你們不同部門");
+		}
+
+		// 接近來是字串 先轉成Date
+		LocalDate workDate = workDateTime.toLocalDate();
+
+		if ((offWorkDateTime.isBefore(workDateTime)) || offWorkDateTime.getYear() != workDateTime.getYear()
+				|| offWorkDateTime.getMonthValue() != workDateTime.getMonthValue()
+				|| offWorkDateTime.getDayOfMonth() != workDateTime.getDayOfMonth()) {
+			return new WorkSystemRes("請輸入正確日期時間");
+		}
+
+		// 藉由員工編號撈資料(判斷有無重複打卡)
+		List<WorkSystem> staffInfo = workSystemDao.findByEmployeeCode(req.getEmployeeCode());
+		// 年分、月份、日 都一樣時 代表打過卡了
+		for (WorkSystem item : staffInfo) {
+			LocalDate localDate = item.getWorkTime().toLocalDate();
+			if (localDate.equals(workDate)) {
+				return new WorkSystemRes("這位員工在" + workDate + "有打卡，不需要補");
+			}
+		}
+
+		// 正常上下班的時數(現在時間-上班時間)
+		int countOffWorkHours = offWorkDateTime.getHour() - 9;
+
+		// 遲到或早退時的計算時數 (下班-他來的時間)
+		int countWorkLateOrLeaveTime = offWorkDateTime.getHour() - workDateTime.getHour();
+
+		// 字串更新狀況
+		String attendanceStatusStr;
+		WorkSystem workSystem = new WorkSystem();
+
+		// 第一種:遲到+早退 = (上班時間 >= 9:00 & 上班分鐘 >= 1 & 下班小時 < 18) ||(上班時間 > 9:00 & 下班時間 <
+		// 18)
+		// 1 = > (ps.計入時數為 : 遲到的時數 ps.18=幾點下班)
+		// 第二種:遲到 =上班小時 >= 9:00 & 上班分鐘 >= 1 (為了防9:00) 或是 上班小時 > 9:00 (ps.計入時數為 : 遲到的時數)
+		// 2 = >防(9:00)或大於(10:00)的情況
+		// 第三種:早退 = 下班小時小於18 # 早退沒有遲到
+		// 3 => ps.計入時數為正常時數
+		// 第四種:正常 = 上述都不合 (ps.計入時數為 :正常的時數)
+
+		if (((workDateTime.getHour() >= 9 && workDateTime.getMinute() >= 1) && offWorkDateTime.getHour() < 18)
+				|| (workDateTime.getHour() > 9 && offWorkDateTime.getHour() < 18)) {
+			attendanceStatusStr = "遲到+早退";
+
+			// 防止 EX: 7 : 55 打卡上班 8:00 打卡下班 ，得出的遲到時數卻是 1 所以 超過 x : 30 直接 x+1
+			if (workDateTime.getMinute() > 30) {
+				countWorkLateOrLeaveTime = countWorkLateOrLeaveTime - 1;
+			}
+
+			// 上述情況發生被-1時可能會低於0
+			if (countWorkLateOrLeaveTime <= 0) {
+				countWorkLateOrLeaveTime = 0;
+			}
+			workSystem = new WorkSystem(UUID.randomUUID(), req.getEmployeeCode(), workDateTime, offWorkDateTime,
+					attendanceStatusStr, countWorkLateOrLeaveTime);
+
+		} else if ((workDateTime.getHour() >= 9 && workDateTime.getMinute() >= 1) || workDateTime.getHour() > 9) {
+			attendanceStatusStr = "遲到";
+
+			// 防止 EX: 7 : 55 打卡上班 8:00 打卡下班 ，得出的遲到時數卻是 1 所以 超過 x : 30 直接 x+1
+			if (workDateTime.getMinute() > 30) {
+				countWorkLateOrLeaveTime = countWorkLateOrLeaveTime - 1;
+			}
+
+			// 上述情況發生被-1時可能會低於0
+			if (countWorkLateOrLeaveTime <= 0) {
+				countWorkLateOrLeaveTime = 0;
+			}
+			workSystem = new WorkSystem(UUID.randomUUID(), req.getEmployeeCode(), workDateTime, offWorkDateTime,
+					attendanceStatusStr, countWorkLateOrLeaveTime);
+		} else if (countOffWorkHours < 8) {
+			attendanceStatusStr = "早退";
+
+			// 以防出現 8:00打卡 9:00打卡下班
+			if (countOffWorkHours <= 0) {
+				countOffWorkHours = 0;
+			}
+			workSystem = new WorkSystem(UUID.randomUUID(), req.getEmployeeCode(), workDateTime, offWorkDateTime,
+					attendanceStatusStr, countOffWorkHours);
+		} else {
+			attendanceStatusStr = "正常";
+			workSystem = new WorkSystem(UUID.randomUUID(), req.getEmployeeCode(), workDateTime, offWorkDateTime,
+					attendanceStatusStr, countOffWorkHours);
+		}
+		workSystemDao.save(workSystem);
+		return new WorkSystemRes(workSystem, "感謝主管，下次請記得打卡");
+
 	}
 
 }
