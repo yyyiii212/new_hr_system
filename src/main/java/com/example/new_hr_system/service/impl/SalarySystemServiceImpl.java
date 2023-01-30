@@ -81,6 +81,11 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 			return new SalarySystemRes("你們是不同的部門");
 		}
 
+		// 判斷新增者與被新增者的等級
+		if (managerEmployeeInfo.getLevel() < employeeInfo.getLevel()) {
+			return new SalarySystemRes("你的權限不夠");
+		}
+
 		// 避免新增到同一位員工 在同年同月有兩筆相同資料
 		List<SalarySystem> salarySystemList = salarySystemDao.findByEmployeeCode(req.getEmployeeCode());
 		LocalDate salaryDate = req.getSalaryDate();
@@ -100,7 +105,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 			break;
 		}
 		default: {
-			message = "請確認該員工是否在去年" + (salaryDate.getMonthValue() - 1) + "月 有出勤";
+			message = "請確認該員工是否在" + (salaryDate.getMonthValue() - 1) + "月 有出勤";
 			break;
 		}
 		}
@@ -130,7 +135,7 @@ public class SalarySystemServiceImpl implements SalarySystemService {
 		// 逞罰扣薪
 		int salaryDeduct = 0;
 
-		// 判斷是否是"過去一個月"的工作時數等資訊 同時判斷年是否符合 或是 當遇到跨年時 工作月==12 & 工作年+1 & 薪資月==1
+		// 判斷是否是"過去一個月"的工作時數等資訊 同時判斷年是否符合 或是 當遇到跨年時 工作年+1 & 工作月==12 & 薪資月==1
 		for (var item : workSystemList) {
 			if ((item.getWorkTime().getYear() == salaryDate.getYear()
 					&& item.getWorkTime().getMonthValue() + 1 == salaryDate.getMonthValue())

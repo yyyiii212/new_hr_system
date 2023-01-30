@@ -9,6 +9,7 @@ public class WorkSystemReq {
 	private String absenteeismDate;
 	private String managerEmployeeCode;
 	private String offWorkTime;
+	private String punchWorkTime;
 	private int deleteYear;
 
 	public String getUuid() {
@@ -81,6 +82,14 @@ public class WorkSystemReq {
 
 	public void setOffWorkTime(String offWorkTime) {
 		this.offWorkTime = offWorkTime;
+	}
+
+	public String getPunchWorkTime() {
+		return punchWorkTime;
+	}
+
+	public void setPunchWorkTime(String punchWorkTime) {
+		this.punchWorkTime = punchWorkTime;
 	}
 
 }

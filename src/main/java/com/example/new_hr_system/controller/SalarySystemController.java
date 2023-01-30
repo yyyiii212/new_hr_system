@@ -18,7 +18,7 @@ public class SalarySystemController {
 	private SalarySystemService salarySystemService;
 
 	// -------------------------------------------------
-	
+
 	// ---綁定登入員工帳號 (可以刪掉)
 	@PostMapping(value = "/api/salarySystemEmployeeCodeLogin") // 登入綁定密碼<不用邏輯> ，逸翔那裏會確認是否有該員工
 	public SalarySystemRes employeeCodeLogin(@RequestBody SalarySystemReq req, HttpSession httpSession) {
@@ -34,9 +34,12 @@ public class SalarySystemController {
 	@PostMapping(value = "/api/creatSalarySystem")
 	public SalarySystemRes creatSalarySystem(@RequestBody SalarySystemReq req, HttpSession httpSession) {
 		Object employeeCode = httpSession.getAttribute("employee_code");
+		if (employeeCode == null) {
+			return new SalarySystemRes("請嘗試重新登入");
+		}
 		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
-		if (!employeeCodeString.equals(req.getSalaryEmployeeCode()) || employeeCode == null) {
-			return new SalarySystemRes("請輸入自己的員工編號新增薪水資料或者嘗試重新登入");
+		if (!employeeCodeString.equals(req.getSalaryEmployeeCode())) {
+			return new SalarySystemRes("請輸入自己的員工編號");
 		}
 		return salarySystemService.creatSalarySystem(req);
 	}
@@ -46,9 +49,12 @@ public class SalarySystemController {
 	@PostMapping(value = "/api/updateSalarySystem")
 	public SalarySystemRes updateSalarySystem(@RequestBody SalarySystemReq req, HttpSession httpSession) {
 		Object employeeCode = httpSession.getAttribute("employee_code");
+		if (employeeCode == null) {
+			return new SalarySystemRes("請嘗試重新登入");
+		}
 		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
-		if (employeeCode == null || !employeeCodeString.equals(req.getSalaryEmployeeCode())) {
-			return new SalarySystemRes("請輸入自己的員工編號更新薪水資料或者嘗試重新登入");
+		if (!employeeCodeString.equals(req.getSalaryEmployeeCode())) {
+			return new SalarySystemRes("請輸入自己的員工編號");
 		}
 		return salarySystemService.updateSalarySystem(req);
 	}
@@ -57,9 +63,12 @@ public class SalarySystemController {
 	@PostMapping(value = "/api/searchSalarySystemForStaff")
 	public SalarySystemRes searchSalarySystemForStaff(@RequestBody SalarySystemReq req, HttpSession httpSession) {
 		Object employeeCode = httpSession.getAttribute("employee_code");
+		if (employeeCode == null) {
+			return new SalarySystemRes("嘗試重新登入");
+		}
 		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
-		if (employeeCode == null || !employeeCodeString.equals(req.getEmployeeCode())) {
-			return new SalarySystemRes("員工請輸入自己的編號查詢資料或者嘗試重新登入");
+		if (!employeeCodeString.equals(req.getEmployeeCode())) {
+			return new SalarySystemRes("請輸入自己的員工編號");
 		}
 		return salarySystemService.searchSalarySystemForStaff(req);
 	}
@@ -68,9 +77,12 @@ public class SalarySystemController {
 	@PostMapping(value = "/api/searchSalarySystemForManager")
 	public SalarySystemRes searchSalarySystemForManager(@RequestBody SalarySystemReq req, HttpSession httpSession) {
 		Object employeeCode = httpSession.getAttribute("employee_code");
+		if (employeeCode == null) {
+			return new SalarySystemRes("請嘗試重新登入");
+		}
 		String employeeCodeString = httpSession.getAttribute("employee_code").toString();
-		if (employeeCode == null || !employeeCodeString.equals(req.getSalaryEmployeeCode())) {
-			return new SalarySystemRes("請輸入自己的員工編號查詢或者嘗試重新登入");
+		if (!employeeCodeString.equals(req.getSalaryEmployeeCode())) {
+			return new SalarySystemRes("請輸入自己的員工編號");
 		}
 		return salarySystemService.searchSalarySystemForManager(req);
 	}
